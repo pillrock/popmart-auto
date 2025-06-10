@@ -2,10 +2,11 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { updateElectronApp } from 'update-electron-app';
-import dotenv from 'dotenv';
-import connectToLive, { disconnectLive } from './services/tiktokLive';
 import env from '../env.json';
 import { windowControl } from './ipcControl/windowControl';
+// import { textToMp3 } from './services/textToMp3';
+// import { playMp3AndDelete } from './services/playSound';
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
@@ -17,6 +18,7 @@ updateElectronApp({
   repo: env.githubRepo, // Repository GitHub của bạn
   updateInterval: '1 hour', // Kiểm tra cập nhật mỗi giờ
 });
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -29,7 +31,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    frame: false,
+    // frame: false,
   });
 
   // and load the index.html of the app.
@@ -40,31 +42,12 @@ const createWindow = () => {
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     );
   }
-  ipcMain.on('tiktok-connect', async (event, username) => {
-    if (currentConnection) {
-      try {
-        await disconnectLive();
-      } catch (error) {
-        console.error('Disconnect error:', error);
-      }
-      currentConnection = null;
-    }
-    try {
-      currentConnection = await connectToLive(username, (chat) => {
-        event.sender.send('tiktok-chat', chat);
-      });
-      // Kết nối thành công, mở launcher
-    } catch (error) {
-      event.sender.send(
-        'tiktok-error',
-        'Có lỗi xảy ra trong quá trình kết nối'
-      );
-      console.error('Connect error:', error);
-    }
-  });
+
   windowControl(mainWindow);
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 // This method will be called when Electron has finished
