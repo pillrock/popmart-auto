@@ -1,9 +1,11 @@
-import Success from './components/Success';
+import OptionsWindow from './components/OptionsWindow';
+import PopmartAutoContainer from './components/PopmartAutoContainer';
 
 function App() {
   return (
-    <div className="grid h-screen w-screen place-items-center">
-      <Success />
+    <div className="grid place-items-center">
+      <PopmartAutoContainer />
+      <OptionsWindow />
     </div>
   );
 }

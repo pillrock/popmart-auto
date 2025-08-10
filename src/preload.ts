@@ -1,13 +1,35 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+// preload.ts
 import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electron', {
+contextBridge.exposeInMainWorld('electronAPI', {
   ipcRenderer: {
-    send: (channel, ...args) => ipcRenderer.send(channel, ...args),
-    on: (channel, func) =>
-      ipcRenderer.on(channel, (_event, ...args) => func(_event, ...args)),
-    removeListener: (channel, func) =>
-      ipcRenderer.removeListener(channel, func),
+    invoke(channel: string, ...args: unknown[]) {
+      return ipcRenderer.invoke(channel, ...args);
+    },
+    send(channel: string, ...args: unknown[]) {
+      ipcRenderer.send(channel, ...args);
+    },
+    on(channel: string, listener: (...args: unknown[]) => void) {
+      ipcRenderer.on(channel, (_event, ...args) => listener(...args));
+    },
+    removeListener(channel: string, listener: (...args: unknown[]) => void) {
+      ipcRenderer.removeListener(channel, listener);
+    },
   },
 });
+
+declare global {
+  interface Window {
+    electronAPI: {
+      ipcRenderer: {
+        invoke(channel: string, ...args: unknown[]): Promise<unknown>;
+        send(channel: string, ...args: unknown[]): void;
+        on(channel: string, listener: (...args: unknown[]) => void): void;
+        removeListener(
+          channel: string,
+          listener: (...args: unknown[]) => void
+        ): void;
+      };
+    };
+  }
+}

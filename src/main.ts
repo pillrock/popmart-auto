@@ -1,23 +1,25 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
-import started from 'electron-squirrel-startup';
 import { updateElectronApp } from 'update-electron-app';
 import env from '../env.json';
-import { windowControl } from './ipcControl/windowControl';
-// import { textToMp3 } from './services/textToMp3';
-// import { playMp3AndDelete } from './services/playSound';
-
+import { windowControl } from './ipcMain/windowControl';
+import { BrowserControl } from './ipcMain/BrowserControl';
+import Store from 'electron-store';
+import LocaStorage from './ipcMain/LocalStorage';
+import started from 'electron-squirrel-startup';
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
+
 if (started) {
   app.quit();
 }
-let currentConnection: any = null;
-console.log(env.githubRepo);
-
 updateElectronApp({
   repo: env.githubRepo, // Repository GitHub của bạn
   updateInterval: '1 hour', // Kiểm tra cập nhật mỗi giờ
 });
+const store = new Store();
+export const localStorage = new LocaStorage(store);
+
+let browserControl: BrowserControl = null;
 
 const createWindow = () => {
   // Create the browser window.
@@ -31,7 +33,8 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    // frame: false,
+    frame: false,
+    icon: 'assets/icons/icon.png',
   });
 
   // and load the index.html of the app.
@@ -44,6 +47,7 @@ const createWindow = () => {
   }
 
   windowControl(mainWindow);
+  browserControl = new BrowserControl(mainWindow);
   // Open the DevTools.
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
@@ -58,6 +62,10 @@ app.on('ready', createWindow);
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
+// Khi app đóng
+app.on('before-quit', async () => {
+  await browserControl.cleanup();
+});
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();

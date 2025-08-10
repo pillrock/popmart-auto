@@ -1,0 +1,16 @@
+export const STATUS_PRODUCT = {
+  checking: 'Đang kiểm tra hàng',
+  dontDetect: 'Không có hàng',
+  detect: 'Sản phẩm đang có sẵn, tiến hành mua...',
+  verifying: 'Đang kiểm tra Cloudflare verification',
+  verifying2: 'Tiếp tục xác thực Cloudflare verification',
+  verifySuccess: 'Xác thực Cloudflare thành công',
+  verifyNotFound: 'Không có Cloudflare verification, tiếp tục...',
+  success: 'Mua hàng thành công',
+  sendingMail: 'MAIL: Tiến hành thông báo thanh toán',
+  sentMail: 'MAIL: Gửi thông báo hoàn tất',
+  exception: 'Không xác định được trạng thái sản phẩm',
+  error: 'Lỗi khi kiểm tra tình trạng hàng: ',
+  errorPayment: 'Lỗi khi xử lý thanh toán',
+  checking_error: 'Kiểm tra lỗi...',
+};

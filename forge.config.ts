@@ -8,17 +8,35 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
 dotenv.config();
-console.log(process.env.GITHUB_REPO);
-console.log(process.env.GITHUB_TOKEN);
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: 'assets/icons/icon',
+    name: 'PopMartAuto',
+    executableName: 'popmart-auto',
+    win32metadata: {
+      CompanyName: 'Pillrock',
+      FileDescription: 'PopMart Auto Restock Application',
+      OriginalFilename: 'PopMartAuto.exe',
+      ProductName: 'PopMart Auto',
+      InternalName: 'PopMartAuto',
+    },
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      name: 'PopmartAuto',
+      authors: 'Pillrock',
+      description: 'Auto restock product for PopMart',
+      setupIcon: path.resolve(__dirname, 'assets/icons/icon.ico'),
+      noMsi: true, // Không tạo file MSI
+      setupExe: 'PopMartAuto-Setup.exe',shortcutName: 'PopMart Auto',
+	  createDesktopShortcut: true,
+	  createStartMenuShortcut: true,
+    }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),
@@ -34,6 +52,8 @@ const config: ForgeConfig = {
         JSON.stringify(
           {
             githubRepo: env.GITHUB_REPO,
+            mailUser: env.MAIL_USER,
+            mailPass: env.MAIL_PASS,
           },
           null,
           2
