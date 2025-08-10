@@ -18,38 +18,38 @@ export default class PaymentProcessor {
   constructor(page: Page) {
     this.page = page;
   }
-  async processPayment(paymentInfo: paymentInfo) {
-    if (!this.page || !paymentInfo) {
-      throw new Error('[-] Trang hoặc thông tin thanh toán không hợp lệ.');
-    }
-    try {
-      // Chờ và click nút chuyển tới trang thanh toán
-      await this.confirmBeforePayment();
-      await delay(3000);
+  // async processPayment(paymentInfo: paymentInfo) {
+  //   if (!this.page || !paymentInfo) {
+  //     throw new Error('[-] Trang hoặc thông tin thanh toán không hợp lệ.');
+  //   }
+  //   try {
+  //     // Chờ và click nút chuyển tới trang thanh toán
+  //     await this.confirmBeforePayment();
+  //     await delay(3000);
 
-      // await this.handleCloudflareVerification();
+  //     // await this.handleCloudflareVerification();
 
-      await this.page.waitForNavigation({ waitUntil: 'networkidle0' });
-      await delay(5000);
+  //     await this.page.waitForNavigation({ waitUntil: 'networkidle0' });
+  //     await delay(5000);
 
-      // Điền thông tin thanh toán
-      await delay(2000);
-      await this.#fillPaymentForm(paymentInfo);
-      await delay(1000);
-      // Gửi thông tin thanh toán
-      await this.submitPayment();
+  //     // Điền thông tin thanh toán
+  //     await delay(2000);
+  //     await this.#fillPaymentForm(paymentInfo);
+  //     await delay(1000);
+  //     // Gửi thông tin thanh toán
+  //     await this.submitPayment();
 
-      const isE = await this.hasPaymentError();
-      if (!isE) {
-        console.log('[-] Thanh toán thất bại');
-        return;
-      }
-      console.log('[+] Thanh toán đã được xử lý thành công.');
-    } catch (error) {
-      console.error('[-] Lỗi khi xử lý thanh toán:', error);
-      throw new Error('[-] Thanh toán không thành công.');
-    }
-  }
+  //     const isE = await this.hasPaymentError(this.page);
+  //     if (!isE) {
+  //       console.log('[-] Thanh toán thất bại');
+  //       return;
+  //     }
+  //     console.log('[+] Thanh toán đã được xử lý thành công.');
+  //   } catch (error) {
+  //     console.error('[-] Lỗi khi xử lý thanh toán:', error);
+  //     throw new Error('[-] Thanh toán không thành công.');
+  //   }
+  // }
   async handleCloudflareVerification() {
     try {
       console.log('[+] Đang kiểm tra Cloudflare verification...');
@@ -124,69 +124,65 @@ export default class PaymentProcessor {
       throw new Error('[-] Xác nhận thanh toán không thành công.');
     }
   }
-  async #fillPaymentForm({ cardNumber, cardExpiry, cardCvc }: paymentInfo) {
+  // async #fillPaymentForm({ cardNumber, cardExpiry, cardCvc }: paymentInfo) {
+  //   try {
+  //     // Thử tìm trong iframe
+  //     let is_finding = true;
+  //     while (is_finding) {
+  //       console.log('[+] Đang tìm form trong iframe...');
+  //       const frames = await this.page.frames();
+  //       for (const frame of frames) {
+  //         try {
+  //           const cardElement = await frame.$(LOCATOR.PAYMENT.CARD_NUMBER);
+  //           if (cardElement) {
+  //             is_finding = false;
+  //             console.log('[+] Tìm thấy form trong iframe');
+  //             await frame.locator(LOCATOR.PAYMENT.CARD_NUMBER).fill(cardNumber);
+  //             await frame.locator(LOCATOR.PAYMENT.CARD_EXPIRY).fill(cardExpiry);
+  //             await frame.locator(LOCATOR.PAYMENT.CARD_CVC).fill(cardCvc);
+
+  //             // Agreement có thể ở page chính hoặc iframe
+  //             const agreementInFrame = await frame.$(LOCATOR.PAYMENT.AGREEMENT);
+  //             if (agreementInFrame) {
+  //               await frame.locator(LOCATOR.PAYMENT.AGREEMENT).click();
+  //             } else {
+  //               await this.page.locator(LOCATOR.PAYMENT.AGREEMENT).click();
+  //             }
+
+  //             return;
+  //           }
+  //         } catch (frameError) {
+  //           // Bỏ qua frame này, thử frame tiếp theo
+  //           is_finding = false;
+  //         }
+  //       }
+  //       await delay(1500);
+  //     }
+
+  //     console.log('[+] Đã điền thông tin thẻ thanh toán.');
+  //   } catch (error) {
+  //     console.error('[-] Lỗi khi điền thông tin thanh toán:', error);
+  //     throw new Error('[-] Điền thông tin thanh toán không thành công.');
+  //   }
+  // }
+
+  async hasPaymentError(pageProduct: Page): Promise<boolean> {
+    let countCheck = 0;
     try {
-      // Thử tìm trong iframe
-      let is_finding = true;
-      while (is_finding) {
-        console.log('[+] Đang tìm form trong iframe...');
-        const frames = await this.page.frames();
-        for (const frame of frames) {
-          try {
-            const cardElement = await frame.$(LOCATOR.PAYMENT.CARD_NUMBER);
-            if (cardElement) {
-              is_finding = false;
-              console.log('[+] Tìm thấy form trong iframe');
-              await frame.locator(LOCATOR.PAYMENT.CARD_NUMBER).fill(cardNumber);
-              await frame.locator(LOCATOR.PAYMENT.CARD_EXPIRY).fill(cardExpiry);
-              await frame.locator(LOCATOR.PAYMENT.CARD_CVC).fill(cardCvc);
-
-              // Agreement có thể ở page chính hoặc iframe
-              const agreementInFrame = await frame.$(LOCATOR.PAYMENT.AGREEMENT);
-              if (agreementInFrame) {
-                await frame.locator(LOCATOR.PAYMENT.AGREEMENT).click();
-              } else {
-                await this.page.locator(LOCATOR.PAYMENT.AGREEMENT).click();
-              }
-
-              return;
-            }
-          } catch (frameError) {
-            // Bỏ qua frame này, thử frame tiếp theo
-            is_finding = false;
-          }
+      // Kiểm tra URL thành công trước tiên
+      while (countCheck < 3) {
+        const currentUrl = await pageProduct.url();
+        if (currentUrl.includes('/checkout?type=normal')) {
+          return false;
+        } else if (currentUrl.includes('/order-confirmation')) {
+          return true;
         }
-        await delay(1500);
+        countCheck++;
+        await delay(3000);
       }
-
-      console.log('[+] Đã điền thông tin thẻ thanh toán.');
     } catch (error) {
-      console.error('[-] Lỗi khi điền thông tin thanh toán:', error);
-      throw new Error('[-] Điền thông tin thanh toán không thành công.');
-    }
-  }
-
-  async hasPaymentError() {
-    try {
-      /// lỗi card
-      const errorMessage = await this.page.waitForSelector(
-        LOCATOR.PAYMENT_ERROR.MESSAGE,
-        { timeout: 15000 }
-      );
-
-      /// không đủ số dư, ..
-      const errorModal = await this.page.waitForSelector(
-        LOCATOR.PAYMENT_ERROR.MODAL,
-        { timeout: 15000 }
-      );
-      const errorException = await this.page.waitForSelector(
-        LOCATOR.PAYMENT_ERROR.FAIL,
-        { timeout: 15000 }
-      );
-      if (errorMessage || errorModal || errorException) return true;
+      console.error('Error checking payment status:', error);
       return false;
-    } catch (error) {
-      return true;
     }
   }
   async submitPayment() {

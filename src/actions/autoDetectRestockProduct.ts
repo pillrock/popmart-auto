@@ -72,11 +72,21 @@ export default class AutoDetectRestockProduct {
             linkProduct: product.linkProduct,
             status: STATUS_PRODUCT.verifySuccess,
           });
+          try {
+            await pageProduct.waitForNavigation({
+              waitUntil: 'networkidle0',
+              timeout: 15000,
+            });
+          } catch (error) {
+            console.log('Navigation timeout, continuing...');
+          }
           callback({
             linkProduct: product.linkProduct,
             status: STATUS_PRODUCT.checking_error,
           });
-          const hasPaymentError = await paymentProcessor.hasPaymentError();
+
+          const hasPaymentError =
+            await paymentProcessor.hasPaymentError(pageProduct);
           if (hasPaymentError) {
             await pageProduct.close();
             this.productsList = this.productsList.filter((p) => p !== product);
@@ -88,8 +98,6 @@ export default class AutoDetectRestockProduct {
             });
             return;
           }
-
-          await pageProduct.waitForNavigation({ waitUntil: 'networkidle0' });
 
           callback({
             linkProduct: product.linkProduct,

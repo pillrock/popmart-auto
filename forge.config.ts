@@ -33,9 +33,7 @@ const config: ForgeConfig = {
       description: 'Auto restock product for PopMart',
       setupIcon: path.resolve(__dirname, 'assets/icons/icon.ico'),
       noMsi: true, // Không tạo file MSI
-      setupExe: 'PopMartAuto-Setup.exe',shortcutName: 'PopMart Auto',
-	  createDesktopShortcut: true,
-	  createStartMenuShortcut: true,
+      setupExe: 'PopMartAuto-Setup.exe',
     }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
