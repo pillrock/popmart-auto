@@ -22,11 +22,13 @@ export default class MailService {
     nameProduct,
     price,
     imgUrl,
+    resultOrder,
   }: {
     emailAccount: string;
     nameProduct: string;
     price: string;
     imgUrl: string;
+    resultOrder: { option: 'one' | 'box'; quantity: number };
   }): Promise<boolean> {
     try {
       await this.transporter.sendMail({
@@ -55,10 +57,11 @@ export default class MailService {
           width: 100% !important;
         }
         .product-image {
-          width: 120px !important;
-          height: auto !important;
-          margin: 0 auto 12px;
+          width: 150px !important;
+          height: 150px !important;
+          overflow: hidden;
           display: block;
+          border-radius: 8px;
         }
       }
     </style>
@@ -145,7 +148,12 @@ export default class MailService {
                           <td
                             class="product-block"
                             width="150"
-                            style="width: 150px; padding-right: 16px"
+                            style="
+                              width: 150px;
+                              padding-right: 16px;
+                              display: flex;
+                              flex-direction: column;
+                            "
                           >
                             <img
                               class="product-image"
@@ -158,8 +166,26 @@ export default class MailService {
                                 object-fit: cover;
                                 border-radius: 8px;
                                 border: 1px solid #e6eef6;
+                                margin-bottom: 8px;
                               "
                             />
+                            <div
+                              style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                width: 150px;
+                                font-size: 14px;
+                                font-weight: 500;
+                                border-radius: 8px;
+                                padding: 4px;
+                                color: #06b6d4 !important;
+                                background-color: #e8fffb;
+                              "
+                            >
+                              <span>${resultOrder.option.toUpperCase()}</span>
+                              <span>x${resultOrder.quantity.toString()}</span>
+                            </div>
                           </td>
 
                           <!-- thông tin -->
@@ -190,8 +216,12 @@ export default class MailService {
                                 color: #6b7280;
                                 line-height: 1.5;
                               "
-                            >Hãy đăng nhập vào PopMart (jp) bằng Email: ${emailAccount}. Quá trình thanh toán diễn ra trong 15 phút.</div>
-                            
+                            >
+                              Hãy đăng nhập vào PopMart (jp) bằng Email:
+                              ${emailAccount}. Quá trình thanh toán diễn ra
+                              trong 15 phút.
+                            </div>
+
                             <!-- CTA -->
                             <div style="margin-top: 16px">
                               <a
@@ -220,7 +250,8 @@ export default class MailService {
 
                 <!-- Note nhỏ -->
                 <p style="margin: 18px 0 0 0; color: #9ca3af; font-size: 12px">
-                  Nếu bạn không còn nhu cầu về đơn hàng này, vui lòng bỏ qua email. PopMart sẽ tự xóa quy trình thanh toán
+                  Nếu bạn không còn nhu cầu về đơn hàng này, vui lòng bỏ qua
+                  email. PopMart sẽ tự xóa quy trình thanh toán
                 </p>
               </td>
             </tr>

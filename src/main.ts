@@ -7,8 +7,8 @@ import { BrowserControl } from './ipcMain/BrowserControl';
 import Store from 'electron-store';
 import LocaStorage from './ipcMain/LocalStorage';
 import started from 'electron-squirrel-startup';
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }

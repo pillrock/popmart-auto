@@ -7,6 +7,13 @@ export const LOCATOR = {
     NAME: '.index_title___0OsZ',
     PRICE: '.index_price__cAj0h',
   },
+  ORDER: {
+    OPTIONS_BOX: '.index_sizeInfoItem__f_Uxb',
+    DISABLE_BOX: '.index_disabled__lr6IM',
+    INCREASE_BTN: '.index_countButton__mJU5Q',
+    DISABLE_BTN: '.index_disableBtn__cDpGw',
+    QUANTITY_ORDER: '.index_countInput__2ma_C',
+  },
   LOGIN: {
     EMAIL: '#email',
     AGREEMENT: '.ant-checkbox-input',

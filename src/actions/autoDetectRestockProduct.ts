@@ -7,6 +7,8 @@ import { index___product } from '../ipcMain/BrowserControl';
 import MailService from '../utils/sendmail';
 import { localStorage } from '../main';
 import { STATUS_PRODUCT } from '../constants';
+import { ElementHandle } from 'rebrowser-puppeteer-core';
+import log from 'electron-log';
 
 interface DataProduct {
   page: Page;
@@ -54,7 +56,7 @@ export default class AutoDetectRestockProduct {
         callback({ linkProduct: product.linkProduct, status: message });
 
         if (success) {
-          console.log(
+          log.info(
             `[Auth] Chuyển page cần xác thực sang main window: ${pageProduct.url()}`
           );
           callback({
@@ -62,6 +64,7 @@ export default class AutoDetectRestockProduct {
             status: STATUS_PRODUCT.detect,
           });
           await pageProduct.bringToFront();
+          const resultOrder = await this.selectOptionsOfOrder(pageProduct);
           await this.clickBuyButton(pageProduct);
           callback({
             linkProduct: product.linkProduct,
@@ -78,7 +81,7 @@ export default class AutoDetectRestockProduct {
               timeout: 15000,
             });
           } catch (error) {
-            console.log('Navigation timeout, continuing...');
+            log.info('Navigation timeout, continuing...');
           }
           callback({
             linkProduct: product.linkProduct,
@@ -110,6 +113,7 @@ export default class AutoDetectRestockProduct {
           await mailService.sendMail({
             emailAccount: localStorage.getUserData().email,
             ...dataReq,
+            resultOrder,
           });
           callback({
             linkProduct: product.linkProduct,
@@ -135,7 +139,7 @@ export default class AutoDetectRestockProduct {
 
     try {
       while (this.productsList.length > 0) {
-        console.log(
+        log.info(
           `[AutoDetect] Đang chạy với ${this.productsList.length} sản phẩm`
         );
 
@@ -170,6 +174,130 @@ export default class AutoDetectRestockProduct {
       }
     }
     this.productsList = [];
+  }
+  async selectOptionsOfOrder(page: Page) {
+    const resultOrder: { option: 'one' | 'box'; quantity: number } = {
+      option: 'one',
+      quantity: 0,
+    };
+    log.info('_______THAO TÁC LỰA CHỌN _______');
+
+    const checkDisableBox = async (element: ElementHandle<Element>) => {
+      const isDisabled = await element.evaluate(
+        (el, locator) => el.matches(locator),
+        LOCATOR.ORDER.DISABLE_BOX
+      );
+      log.info(`Kết quả kiểm tra box có bị vô hiệu hóa: ${isDisabled}`);
+      return isDisabled;
+    };
+
+    const checkDisableBtn = async (element: ElementHandle<Element>) => {
+      const isDisabled = await element.evaluate(
+        (el, locator) => el.matches(locator),
+        LOCATOR.ORDER.DISABLE_BTN
+      );
+      log.info(`Kết quả kiểm tra nút có bị vô hiệu hóa: ${isDisabled}`);
+      return isDisabled;
+    };
+
+    const QuantityIsTwo = async () => {
+      try {
+        const result = await page.$eval(
+          LOCATOR.ORDER.QUANTITY_ORDER,
+          (el) => el.getAttribute('value').trim() === '2'
+        );
+        log.info(`Kết quả kiểm tra số lượng bằng 2: ${result}`);
+        return result;
+      } catch (error) {
+        log.error(`Lỗi khi kiểm tra số lượng: ${error.message}`);
+        return false;
+      }
+    };
+
+    try {
+      log.info(
+        `Tìm kiếm hộp lựa chọn với selector: ${LOCATOR.ORDER.OPTIONS_BOX}`
+      );
+
+      /// nếu có lựa chọn HỘP thì sẽ ưu tiên lấy
+      const selectsNox = await page.$$(LOCATOR.ORDER.OPTIONS_BOX);
+      log.info(`Tìm thấy ${selectsNox.length} phần tử hộp lựa chọn`);
+
+      if (selectsNox.length == 2) {
+        log.info('Tìm thấy 2 hộp lựa chọn, kiểm tra hộp thứ 2 (HỘP)');
+        const isDisabled = await checkDisableBox(selectsNox[1]);
+        if (!isDisabled) {
+          await selectsNox[1].click();
+          resultOrder.option = 'box';
+          log.info('Đã chọn HỘP');
+        } else {
+          log.info('HỘP bị vô hiệu hóa, không thể chọn');
+        }
+      } else if (selectsNox.length == 1) {
+        log.info('Tìm thấy 1 hộp lựa chọn, kiểm tra hộp đầu tiên (CÁI)');
+        const isDisabled = await checkDisableBox(selectsNox[0]);
+        if (!isDisabled) {
+          await selectsNox[0].click();
+          log.info('Đã chọn CÁI');
+          resultOrder.option = 'one';
+        } else {
+          log.info('CÁI bị vô hiệu hóa, không thể chọn');
+        }
+      } else {
+        log.warn('Không tìm thấy hộp lựa chọn nào');
+      }
+
+      // Chờ một chút sau khi chọn option
+      await delay(500);
+
+      log.info(
+        `Tìm kiếm nút tăng số lượng với selector: ${LOCATOR.ORDER.INCREASE_BTN}`
+      );
+
+      /**
+       * mua với số lượng là 2 cho tất cả,
+       * nếu không tăng lên được 2 thì mua 1
+       */
+      const selectsIncreaseBtn = await page.$$(LOCATOR.ORDER.INCREASE_BTN);
+      log.info(`Tìm thấy ${selectsIncreaseBtn.length} nút tăng số lượng`);
+
+      if (selectsIncreaseBtn.length >= 2) {
+        const increaseBtn = selectsIncreaseBtn[1];
+        log.info('Kiểm tra nút tăng số lượng có bị vô hiệu hóa không');
+
+        const isBtnDisabled = await checkDisableBtn(increaseBtn);
+        if (!isBtnDisabled) {
+          log.info(
+            'Nút tăng số lượng đã được kích hoạt, bắt đầu tăng số lượng'
+          );
+          let i = 1;
+          while (i < 4) {
+            log.info(`Click nút tăng số lượng, lần thử ${i}`);
+            await increaseBtn.click();
+            await delay(300); // Chờ một chút để quantity update
+
+            if (await QuantityIsTwo()) {
+              log.info('Số lượng đã đạt 2, dừng tăng');
+              break;
+            }
+            i++;
+            log.info('Số lượng chưa tăng lên 2, tiếp tục ấn lên');
+          }
+          resultOrder.quantity = i;
+        } else {
+          log.info('Nút tăng số lượng bị vô hiệu hóa, không thể tăng số lượng');
+          resultOrder.quantity = 1;
+        }
+      } else {
+        log.warn('Không tìm thấy đủ nút tăng số lượng (cần ít nhất 2)');
+      }
+      return resultOrder;
+    } catch (error) {
+      log.error('#kdjewif: lỗi khi lựa chọn đặt hàng: ', error.message);
+      log.error('Chi tiết lỗi:', error.stack);
+    } finally {
+      log.info('_______________________');
+    }
   }
 
   async addProduct(product: { linkProduct: string }): Promise<{
@@ -230,18 +358,19 @@ export default class AutoDetectRestockProduct {
     page: Page
   ): Promise<{ success: boolean; message: string }> {
     try {
+      log.info('______THAO TAC CHECK HÀNG TỒN_____');
       const buyButton = await page.$(LOCATOR.PRODUCT.BUY_BUTTON);
       const outOfStock = await page.$(LOCATOR.PRODUCT.OUT_OF_STOCK);
 
       if (buyButton) {
-        console.log('[+] Sản phẩm có sẵn để mua');
+        log.info('[+] Sản phẩm có sẵn để mua');
         return { success: true, message: 'Sản phẩm có sẵn để mua' };
       } else if (outOfStock) {
-        console.log('[+] Sản phẩm hết hàng.');
+        log.info('[+] Sản phẩm hết hàng.');
 
         return { success: false, message: 'Sản phẩm hết hàng' };
       } else {
-        console.log('[+] Không xác định được trạng thái sản phẩm');
+        log.info('[+] Không xác định được trạng thái sản phẩm');
         return {
           success: false,
           message: 'Không xác định được trạng thái sản phẩm',
@@ -253,18 +382,33 @@ export default class AutoDetectRestockProduct {
         success: false,
         message: 'lỗi khi kiểm tra tình trạng hàng: ' + error?.message,
       };
+    } finally {
+      log.info('_______________________');
     }
   }
 
   async clickBuyButton(page: Page) {
     try {
-      await page.locator(LOCATOR.PRODUCT.BUY_BUTTON).click();
-      console.log('[+] Đã click nút mua.');
-      await page.waitForNavigation({
-        waitUntil: ['networkidle0', 'domcontentloaded'],
-      });
+      log.info('______THAO TÁC MUA______');
+
+      // Lặp tối đa 3 lần
+      for (let i = 0; i < 3; i++) {
+        const a = await page.$(LOCATOR.PRODUCT.BUY_BUTTON);
+        if (a) {
+          await a.click();
+          if (i >= 1) {
+            log.warn('[!] Trang chưa chuyển, click lại...');
+          }
+        } else {
+          return;
+        }
+        await delay(1000);
+      }
+      log.error('[-] Đã click nhiều lần nhưng vẫn chưa chuyển trang.');
     } catch (error) {
-      console.error('[-] Lỗi khi click nút mua:', error);
+      log.error('[-] Lỗi khi click nút mua:', error);
+    } finally {
+      log.info('_______________________');
     }
   }
 

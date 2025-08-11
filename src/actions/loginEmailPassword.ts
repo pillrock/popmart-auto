@@ -1,6 +1,7 @@
 import { LOCATOR } from '../constants/index';
 import type { Page } from 'rebrowser-puppeteer-core';
 import BrowserManager from '../browser';
+import log from 'electron-log';
 
 export default class LoginEmailPassword {
   private url = 'https://www.popmart.com/jp/user/login?redirect=%2Faccount';
@@ -66,7 +67,7 @@ export default class LoginEmailPassword {
   async destroyPage(): Promise<void> {
     try {
       if (this.page && !this.page.isClosed()) await this.page.close();
-      console.log('[+] Trang đăng nhập đã được đóng.');
+      log.info('[+] Trang đăng nhập đã được đóng.');
     } catch (error) {
       console.error('[-] Lỗi khi đóng trang:', error);
     }

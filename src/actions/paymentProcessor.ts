@@ -1,6 +1,7 @@
 // 4848 0410 3292 4955
 // 1129
 // 678
+import log from 'electron-log';
 
 import { LOCATOR } from '../constants/index';
 import delay from '../utils/delay';
@@ -52,14 +53,14 @@ export default class PaymentProcessor {
   // }
   async handleCloudflareVerification() {
     try {
-      console.log('[+] Đang kiểm tra Cloudflare verification...');
+      log.info('[+] Đang kiểm tra Cloudflare verification...');
       // Đợi tối đa 10 giây để kiểm tra xem có Cloudflare box không
       const boxVerify = await this.page
         .waitForSelector('.index_cloudflareBox__9zYYt', { timeout: 10000 })
         .catch();
 
       if (boxVerify) {
-        console.log('[+] Đang xác thực Cloudflare...');
+        log.info('[+] Đang xác thực Cloudflare...');
 
         // Đợi Cloudflare box biến mất (tối đa 60 giây)
         await this.page.waitForFunction(
@@ -68,9 +69,9 @@ export default class PaymentProcessor {
           '.index_cloudflareBox__9zYYt'
         );
 
-        console.log('[+] Xác thực Cloudflare thành công.');
+        log.info('[+] Xác thực Cloudflare thành công.');
       } else {
-        console.log('[+] Không có Cloudflare verification, tiếp tục...');
+        log.info('[+] Không có Cloudflare verification, tiếp tục...');
       }
     } catch (error) {
       console.warn('[!] Cảnh báo khi xử lý Cloudflare:', error.message);
@@ -89,7 +90,7 @@ export default class PaymentProcessor {
           '[-] Nút chuyển trang không được tìm thấy sau thời gian chờ.'
         );
       }
-      console.log('[+] Đã tìm thấy nút chuyển trang.');
+      log.info('[+] Đã tìm thấy nút chuyển trang.');
       let boxVerify = null;
       while (boxVerify === null) {
         await this.page.locator(LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT).click();
@@ -100,13 +101,13 @@ export default class PaymentProcessor {
           break;
         } catch (error) {
           if (error.name === 'TimeoutError') {
-            console.log('Không tìm thấy phần tử sau 6 giây.');
+            log.info('Không tìm thấy phần tử sau 6 giây.');
           }
         }
         await delay(1000);
       }
       if (boxVerify) {
-        console.log('[+] Đang xác thực Cloudflare...');
+        log.info('[+] Đang xác thực Cloudflare...');
 
         // Đợi Cloudflare box biến mất (tối đa 60 giây)
         await this.page.waitForFunction(
@@ -115,9 +116,9 @@ export default class PaymentProcessor {
           '.index_cloudflareBox__9zYYt'
         );
 
-        console.log('[+] Xác thực Cloudflare thành công.');
+        log.info('[+] Xác thực Cloudflare thành công.');
       } else {
-        console.log('[+] Không có Cloudflare verification, tiếp tục...');
+        log.info('[+] Không có Cloudflare verification, tiếp tục...');
       }
     } catch (error) {
       console.error('[-] Lỗi khi chuyển tới trang thanh toán:', error);

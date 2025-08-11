@@ -3,11 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Popmart - Xác nhận đơn hàng</title>
+    <title>ĐẶT HÀNG THÀNH CÔNG ✅</title>
 
-    <!-- Một vài style cơ bản (nhiều mail client chỉ chấp nhận inline style) -->
     <style>
-      /* fallback cho những client hỗ trợ CSS */
       @media only screen and (max-width: 600px) {
         .container {
           width: 100% !important;
@@ -22,10 +20,11 @@
           width: 100% !important;
         }
         .product-image {
-          width: 120px !important;
-          height: auto !important;
-          margin: 0 auto 12px;
+          width: 150px !important;
+          height: 150px !important;
+          overflow: hidden;
           display: block;
+          border-radius: 8px;
         }
       }
     </style>
@@ -112,12 +111,17 @@
                           <td
                             class="product-block"
                             width="150"
-                            style="width: 150px; padding-right: 16px"
+                            style="
+                              width: 150px;
+                              padding-right: 16px;
+                              display: flex;
+                              flex-direction: column;
+                            "
                           >
                             <img
                               class="product-image"
-                              src="https://prod-eurasian-res.popmart.com/default/20250114_173739_232427____1_____1200x1200.jpg"
-                              alt="{{productName}}"
+                              src="https://prod-eurasian-res.popmart.com/default/20240723_173027_088810____10_____1200x1200.jpg?x-oss-process=image/format,webp"
+                              alt="${nameProduct}"
                               style="
                                 display: block;
                                 width: 150px;
@@ -125,8 +129,26 @@
                                 object-fit: cover;
                                 border-radius: 8px;
                                 border: 1px solid #e6eef6;
+                                margin-bottom: 8px;
                               "
                             />
+                            <div
+                              style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                width: 150px;
+                                font-size: 14px;
+                                font-weight: 500;
+                                border-radius: 8px;
+                                padding: 4px;
+                                color: #06b6d4 !important;
+                                background-color: #e8fffb;
+                              "
+                            >
+                              <span>BOX</span>
+                              <span>x2</span>
+                            </div>
                           </td>
 
                           <!-- thông tin -->
@@ -139,7 +161,7 @@
                                 margin-bottom: 6px;
                               "
                             >
-                              MOLLY Hugging 1/8 Action Figure
+                              ${nameProduct}
                             </div>
                             <div
                               style="
@@ -149,7 +171,7 @@
                                 margin-bottom: 12px;
                               "
                             >
-                              JPY ¥9,900
+                              ${price}
                             </div>
                             <div
                               style="
@@ -158,14 +180,15 @@
                                 line-height: 1.5;
                               "
                             >
-                              Vui lòng đăng nhập vào tài khoản của bạn để hoàn
-                              tất thanh toán và xác nhận đơn hàng.
+                              Hãy đăng nhập vào PopMart (jp) bằng Email:
+                              ${emailAccount}. Quá trình thanh toán diễn ra
+                              trong 15 phút.
                             </div>
 
                             <!-- CTA -->
                             <div style="margin-top: 16px">
                               <a
-                                href=""
+                                href="https://www.popmart.com/jp/account"
                                 target="_blank"
                                 style="
                                   display: inline-block;
@@ -190,8 +213,8 @@
 
                 <!-- Note nhỏ -->
                 <p style="margin: 18px 0 0 0; color: #9ca3af; font-size: 12px">
-                  Nếu bạn không yêu cầu đơn hàng này, vui lòng bỏ qua email hoặc
-                  liên hệ hỗ trợ.
+                  Nếu bạn không còn nhu cầu về đơn hàng này, vui lòng bỏ qua
+                  email. PopMart sẽ tự xóa quy trình thanh toán
                 </p>
               </td>
             </tr>
@@ -236,3 +259,4 @@
     </table>
   </body>
 </html>
+`
