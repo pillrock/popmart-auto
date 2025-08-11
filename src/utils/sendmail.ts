@@ -102,7 +102,7 @@ export default class MailService {
                       <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;
                         background: #f0f9ff; padding: 6px 8px; border-radius: 6px; color: #0369a1; font-size: 13px; font-weight: 500;">
                         <span>${resultOrder.option === 'one' ? 'CÁI' : 'HỘP'}</span>
-                        <span>x${resultOrder.quantity}</span>
+                        <span style="margin-left: auto;">x${resultOrder.quantity}</span>
                       </div>
                     </div>
                     
@@ -112,7 +112,7 @@ export default class MailService {
                         ${nameProduct}
                       </h3>
                       <div style="color: #06b6d4; font-weight: 700; font-size: 15px; margin-bottom: 12px;">
-                        ${price}
+                        JPY ¥${(parseInt(price.replace(/\D+/g, '').trim()) * resultOrder.quantity).toLocaleString()}
                       </div>
                       <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 13px; line-height: 1.5;">
                         Hãy đăng nhập vào PopMart (jp) bằng Email: <strong>${emailAccount}</strong>.

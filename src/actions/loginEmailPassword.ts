@@ -21,8 +21,12 @@ export default class LoginEmailPassword {
     }
     this.page = await this.browserManager.openPage(this.url);
     await this.page.waitForNavigation({ waitUntil: 'load' });
-    await this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY).click();
-    await this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click();
+
+    await Promise.race([
+      this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click(),
+      this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY).click(),
+      this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY2).click(),
+    ]);
     // Chờ và click nút chấp nhận chính sách
     await this.page.locator(LOCATOR.LOGIN.ACCEPT_POLICY).click();
 
