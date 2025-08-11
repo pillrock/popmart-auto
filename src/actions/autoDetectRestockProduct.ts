@@ -97,8 +97,7 @@ export default class AutoDetectRestockProduct {
             this.productsList = this.productsList.filter((p) => p !== product);
             callback({
               linkProduct: product.linkProduct,
-              status:
-                STATUS_PRODUCT.errorPayment + ', xóa sản phẩm sau 10 giây',
+              status: STATUS_PRODUCT.errorPayment + ', xóa sản phẩm sau 5 giây',
               remove: true,
             });
             return;
@@ -128,7 +127,7 @@ export default class AutoDetectRestockProduct {
           this.productsList = this.productsList.filter((p) => p !== product);
           callback({
             linkProduct: product.linkProduct,
-            status: 'HOÀN TẤT ĐẶT HÀNG, xóa sản phẩm sau 10 giây',
+            status: 'HOÀN TẤT ĐẶT HÀNG, xóa sản phẩm sau 5 giây',
             remove: true,
           });
         } else {
@@ -287,6 +286,11 @@ export default class AutoDetectRestockProduct {
             log.info('Số lượng chưa tăng lên 2, tiếp tục ấn lên');
           }
           resultOrder.quantity = i;
+          // xử lý khi shop chỉ tối đa 1 sản phẩm 1 người
+          // khi đó i thì cứ cộng mà sản phẩm thực tế không tăng
+          if (i == 4) {
+            resultOrder.quantity = i;
+          }
         } else {
           log.info('Nút tăng số lượng bị vô hiệu hóa, không thể tăng số lượng');
           resultOrder.quantity = 1;

@@ -92,6 +92,7 @@ export default class PaymentProcessor {
       }
       log.info('[+] Đã tìm thấy nút chuyển trang.');
       let boxVerify = null;
+
       while (boxVerify === null) {
         await this.page.locator(LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT).click();
         try {

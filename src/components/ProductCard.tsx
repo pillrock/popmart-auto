@@ -30,7 +30,7 @@ export default function ProductCard({
         // xóa ở frontend
         console.log('ĐÃ XÓA: ', products);
         onRemoveProduct(linkProduct);
-      }, 10000);
+      }, 5000);
     }
   }, [statusProducts]);
   return (
