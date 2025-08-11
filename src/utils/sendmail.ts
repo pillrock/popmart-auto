@@ -41,7 +41,6 @@ export default class MailService {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>ĐẶT HÀNG THÀNH CÔNG ✅</title>
-
     <style>
       @media only screen and (max-width: 600px) {
         .container {
@@ -52,241 +51,102 @@ export default class MailService {
           width: 100% !important;
           height: auto !important;
         }
-        .product-block {
-          display: block !important;
-          width: 100% !important;
+        .product-container {
+          flex-direction: column !important;
         }
-        .product-image {
-          width: 150px !important;
-          height: 150px !important;
-          overflow: hidden;
-          display: block;
-          border-radius: 8px;
+        .product-image-container {
+          width: 100% !important;
+          margin-right: 0 !important;
+          margin-bottom: 16px !important;
+        }
+        .product-info {
+          width: 100% !important;
         }
       }
     </style>
   </head>
-  <body
-    style="
-      margin: 0;
-      padding: 20px;
-      background: #f2f4f7;
-      font-family: Helvetica, Arial, sans-serif;
-    "
-  >
+  <body style="margin: 0; padding: 20px; background: #f2f4f7; font-family: 'Helvetica Neue', Arial, sans-serif;">
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
       <tr>
         <td align="center">
-          <table
-            class="container"
-            width="600"
-            cellpadding="0"
-            cellspacing="0"
-            role="presentation"
-            style="
-              width: 600px;
-              max-width: 600px;
-              background: #ffffff;
-              border-radius: 8px;
-              overflow: hidden;
-              box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-            "
-          >
-            <!-- Header image -->
+          <table class="container" width="600" cellpadding="0" cellspacing="0" role="presentation"
+            style="width: 600px; max-width: 600px; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);">
+            
+            <!-- Header -->
             <tr>
               <td style="padding: 0">
-                <img
-                  class="hero-img"
-                  src="https://shinhan.com.vn/public/uploads/card/QUYNH/2025/Popmart_debit/popmart-1600x280.png"
-                  alt="Popmart"
-                  style="
-                    display: block;
-                    width: 100%;
-                    height: auto;
-                    object-fit: cover;
-                  "
-                />
+                <img class="hero-img" src="https://shinhan.com.vn/public/uploads/card/QUYNH/2025/Popmart_debit/popmart-1600x280.png"
+                  alt="Popmart" style="display: block; width: 100%; height: auto; object-fit: cover;"/>
               </td>
             </tr>
 
-            <!-- Body -->
+            <!-- Content -->
             <tr>
               <td style="padding: 24px">
-                <h2 style="margin: 0 0 8px 0; font-size: 20px; color: #111827">
+                <h2 style="margin: 0 0 8px 0; font-size: 20px; color: #111827; font-weight: 600;">
                   Đơn hàng của bạn đã được đặt thành công
                 </h2>
-                <p
-                  style="
-                    margin: 0 0 18px 0;
-                    color: #6b7280;
-                    font-size: 14px;
-                    line-height: 1.5;
-                  "
-                >
-                  Cảm ơn bạn đã sử dụng Popmart Auto. Dưới đây là thông tin sản
-                  phẩm và hướng dẫn thanh toán.
+                <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px; line-height: 1.5;">
+                  Cảm ơn bạn đã sử dụng Popmart Auto. Dưới đây là thông tin sản phẩm và hướng dẫn thanh toán.
                 </p>
 
-                <!-- Product block -->
-                <table
-                  width="100%"
-                  cellpadding="0"
-                  cellspacing="0"
-                  role="presentation"
-                  style="border-top: 1px solid #eef2f7; padding-top: 18px"
-                >
-                  <tr>
-                    <td style="padding: 16px 0">
-                      <table
-                        width="100%"
-                        cellpadding="0"
-                        cellspacing="0"
-                        role="presentation"
-                      >
-                        <tr style="vertical-align: top">
-                          <!-- ảnh sản phẩm -->
-                          <td
-                            class="product-block"
-                            width="150"
-                            style="
-                              width: 150px;
-                              padding-right: 16px;
-                              display: flex;
-                              flex-direction: column;
-                            "
-                          >
-                            <img
-                              class="product-image"
-                              src="${imgUrl}"
-                              alt="${nameProduct}"
-                              style="
-                                display: block;
-                                width: 150px;
-                                height: 150px;
-                                object-fit: cover;
-                                border-radius: 8px;
-                                border: 1px solid #e6eef6;
-                                margin-bottom: 8px;
-                              "
-                            />
-                            <div
-                              style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                width: 150px;
-                                font-size: 14px;
-                                font-weight: 500;
-                                border-radius: 8px;
-                                padding: 4px;
-                                color: #06b6d4 !important;
-                                background-color: #e8fffb;
-                              "
-                            >
-                              <span>${resultOrder.option.toUpperCase()}</span>
-                              <span>x${resultOrder.quantity.toString()}</span>
-                            </div>
-                          </td>
+                <!-- Product Section -->
+                <div style="border-top: 1px solid #eef2f7; padding-top: 18px;">
+                  <div class="product-container" style="display: flex; flex-wrap: nowrap; margin-bottom: 16px;">
+                    
+                    <!-- Product Image -->
+                    <div class="product-image-container" style="width: 150px; margin-right: 20px; flex-shrink: 0;">
+                      <img src="${imgUrl}" alt="${nameProduct}"
+                        style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #f0f0f0; display: block;"/>
+                      
+                      <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;
+                        background: #f0f9ff; padding: 6px 8px; border-radius: 6px; color: #0369a1; font-size: 13px; font-weight: 500;">
+                        <span>${resultOrder.option === 'one' ? 'CÁI' : 'HỘP'}</span>
+                        <span>x${resultOrder.quantity}</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Product Info -->
+                    <div class="product-info" style="flex-grow: 1;">
+                      <h3 style="margin: 0 0 6px 0; font-size: 16px; color: #111827; font-weight: 600;">
+                        ${nameProduct}
+                      </h3>
+                      <div style="color: #06b6d4; font-weight: 700; font-size: 15px; margin-bottom: 12px;">
+                        ${price}
+                      </div>
+                      <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 13px; line-height: 1.5;">
+                        Hãy đăng nhập vào PopMart (jp) bằng Email: <strong>${emailAccount}</strong>.
+                        Quá trình thanh toán diễn ra trong 15 phút.
+                      </p>
+                      <a href="https://www.popmart.com/jp/account" target="_blank"
+                        style="display: inline-block; padding: 12px 18px; background: #2563eb; color: #ffffff;
+                        text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                        Đăng nhập & Thanh toán
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-                          <!-- thông tin -->
-                          <td style="padding-top: 4px">
-                            <div
-                              style="
-                                font-size: 16px;
-                                color: #111827;
-                                font-weight: 600;
-                                margin-bottom: 6px;
-                              "
-                            >
-                              ${nameProduct}
-                            </div>
-                            <div
-                              style="
-                                font-size: 14px;
-                                color: #06b6d4;
-                                font-weight: 700;
-                                margin-bottom: 12px;
-                              "
-                            >
-                              ${price}
-                            </div>
-                            <div
-                              style="
-                                font-size: 13px;
-                                color: #6b7280;
-                                line-height: 1.5;
-                              "
-                            >
-                              Hãy đăng nhập vào PopMart (jp) bằng Email:
-                              ${emailAccount}. Quá trình thanh toán diễn ra
-                              trong 15 phút.
-                            </div>
-
-                            <!-- CTA -->
-                            <div style="margin-top: 16px">
-                              <a
-                                href="https://www.popmart.com/jp/account"
-                                target="_blank"
-                                style="
-                                  display: inline-block;
-                                  padding: 12px 18px;
-                                  background: #2563eb;
-                                  color: #ffffff;
-                                  text-decoration: none;
-                                  border-radius: 8px;
-                                  font-weight: 600;
-                                  font-size: 14px;
-                                "
-                              >
-                                Đăng nhập & Thanh toán
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-
-                <!-- Note nhỏ -->
-                <p style="margin: 18px 0 0 0; color: #9ca3af; font-size: 12px">
-                  Nếu bạn không còn nhu cầu về đơn hàng này, vui lòng bỏ qua
-                  email. PopMart sẽ tự xóa quy trình thanh toán
+                <!-- Footer Note -->
+                <p style="margin: 24px 0 0 0; color: #9ca3af; font-size: 12px; line-height: 1.5;">
+                  Nếu bạn không còn nhu cầu về đơn hàng này, vui lòng bỏ qua email. 
+                  PopMart sẽ tự xóa quy trình thanh toán sau 15 phút.
                 </p>
               </td>
             </tr>
 
-            <!-- Footer line -->
+            <!-- Decorative Line -->
             <tr>
               <td style="padding: 0">
-                <div
-                  style="
-                    height: 6px;
-                    background: linear-gradient(90deg, #06b6d4, #7c3aed);
-                  "
-                ></div>
+                <div style="height: 6px; background: linear-gradient(90deg, #06b6d4, #7c3aed);"></div>
               </td>
             </tr>
 
-            <!-- Footer content -->
+            <!-- Footer -->
             <tr>
-              <td
-                style="
-                  padding: 16px 24px;
-                  background: #f9fafb;
-                  color: #6b7280;
-                  font-size: 12px;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                  "
-                >
-                  <div>© Popmart Auto.</div>
+              <td style="padding: 16px 24px; background: #f9fafb; color: #6b7280; font-size: 12px;">
+                <div style="text-align: center;">
+                  © Popmart Auto - Hệ thống đặt hàng tự động
                 </div>
               </td>
             </tr>

@@ -37,7 +37,7 @@ export default class AutoDetectRestockProduct {
 
     const runningTasks = new Map<string, Promise<void>>(); // key = linkProduct
 
-    const processProduct = async (product: any) => {
+    const processProduct = async (product: DataProduct) => {
       try {
         if (product.page.isClosed()) {
           this.productsList = this.productsList.filter((p) => p !== product);
@@ -65,6 +65,8 @@ export default class AutoDetectRestockProduct {
           });
           await pageProduct.bringToFront();
           const resultOrder = await this.selectOptionsOfOrder(pageProduct);
+
+          const newDataProduct = await this.getProductData(pageProduct);
           await this.clickBuyButton(pageProduct);
           callback({
             linkProduct: product.linkProduct,
@@ -114,6 +116,7 @@ export default class AutoDetectRestockProduct {
             emailAccount: localStorage.getUserData().email,
             ...dataReq,
             resultOrder,
+            price: newDataProduct.price,
           });
           callback({
             linkProduct: product.linkProduct,
@@ -274,13 +277,13 @@ export default class AutoDetectRestockProduct {
           while (i < 4) {
             log.info(`Click nút tăng số lượng, lần thử ${i}`);
             await increaseBtn.click();
-            await delay(300); // Chờ một chút để quantity update
+            await delay(300);
+            i++;
 
             if (await QuantityIsTwo()) {
               log.info('Số lượng đã đạt 2, dừng tăng');
               break;
             }
-            i++;
             log.info('Số lượng chưa tăng lên 2, tiếp tục ấn lên');
           }
           resultOrder.quantity = i;
@@ -386,13 +389,12 @@ export default class AutoDetectRestockProduct {
       log.info('_______________________');
     }
   }
-
   async clickBuyButton(page: Page) {
     try {
       log.info('______THAO TÁC MUA______');
 
       // Lặp tối đa 3 lần
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 5; i++) {
         const a = await page.$(LOCATOR.PRODUCT.BUY_BUTTON);
         if (a) {
           await a.click();

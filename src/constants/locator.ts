@@ -21,6 +21,10 @@ export const LOCATOR = {
     PASSWORD: '#password',
     BUTTON_SUBMIT: '.index_loginButton__O6r8l',
 
+    IGNORE_COUNTRY: '.index_siteCountry___tWaj',
+    MODALCOUNTRY_CLOSE: '.index_closeContainer__vm5Us',
+    ACCEPT_POLICY: '.policy_acceptBtn__ZNU71',
+
     ERROR_EMAIL: '.ant-form-item-explain-error',
     ERROR_PASSWORD: '.ant-notification-notice-message',
   },
