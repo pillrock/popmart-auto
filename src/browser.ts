@@ -1,4 +1,5 @@
 import type { Browser, Page } from 'rebrowser-puppeteer-core';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export default class BrowserManager {
   private browser: Browser | null;
@@ -24,6 +25,7 @@ export default class BrowserManager {
       connectOption: {},
       disableXvfb: false,
       ignoreAllFlags: false,
+      plugins: [StealthPlugin()],
     });
 
     this.browser = browser;

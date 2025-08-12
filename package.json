@@ -1,7 +1,7 @@
 {
   "name": "Pillrock",
   "productName": "PopMart Auto",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -56,6 +56,7 @@
     "lucide-react": "^0.511.0",
     "nodemailer": "^7.0.5",
     "postcss": "^8.5.3",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "puppeteer-real-browser": "^1.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
