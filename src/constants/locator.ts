@@ -21,6 +21,7 @@ export const LOCATOR = {
     PASSWORD: '#password',
     BUTTON_SUBMIT: '.index_loginButton__O6r8l',
 
+    CONTAINER_COUNTRY: '.index_contentContainer__YSS2J',
     IGNORE_COUNTRY2: '.index_ipInConutry__BoVSZ',
     IGNORE_COUNTRY: '.index_siteCountry___tWaj',
     MODALCOUNTRY_CLOSE: '.index_closeContainer__vm5Us',

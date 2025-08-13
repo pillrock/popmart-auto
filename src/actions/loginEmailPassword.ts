@@ -2,6 +2,7 @@ import { LOCATOR } from '../constants/index';
 import type { Page } from 'rebrowser-puppeteer-core';
 import BrowserManager from '../browser';
 import log from 'electron-log';
+import delay from '../utils/delay';
 
 export default class LoginEmailPassword {
   private url = 'https://www.popmart.com/jp/user/login?redirect=%2Faccount';
@@ -22,11 +23,24 @@ export default class LoginEmailPassword {
     this.page = await this.browserManager.openPage(this.url);
     await this.page.waitForNavigation({ waitUntil: 'load' });
 
-    await Promise.race([
-      this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click(),
-      this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY).click(),
-      this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY2).click(),
-    ]);
+    await delay(2000);
+
+    const isContainerCountry = await this.page.$(
+      LOCATOR.LOGIN.CONTAINER_COUNTRY
+    );
+    if (isContainerCountry) {
+      try {
+        await Promise.race([
+          this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click(),
+          this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY).click(),
+          this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY2).click(),
+        ]);
+      } catch (error) {
+        if (error.name === 'TimeoutError') {
+          log.info('Server đã ở nhật bổn');
+        }
+      }
+    }
     // Chờ và click nút chấp nhận chính sách
     await this.page.locator(LOCATOR.LOGIN.ACCEPT_POLICY).click();
 
