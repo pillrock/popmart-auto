@@ -24,7 +24,7 @@ export const LOCATOR = {
     CONTAINER_COUNTRY: '.index_contentContainer__YSS2J',
     IGNORE_COUNTRY2: '.index_ipInConutry__BoVSZ',
     IGNORE_COUNTRY: '.index_siteCountry___tWaj',
-    MODALCOUNTRY_CLOSE: '.index_closeContainer__vm5Us',
+    MODALCOUNTRY_CLOSE: '.index_closeIcon__oBwY4',
     ACCEPT_POLICY: '.policy_acceptBtn__ZNU71',
 
     ERROR_EMAIL: '.ant-form-item-explain-error',

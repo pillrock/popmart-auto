@@ -23,63 +23,69 @@ export default class LoginEmailPassword {
     this.page = await this.browserManager.openPage(this.url);
     await this.page.waitForNavigation({ waitUntil: 'load' });
 
-    await delay(2000);
-
-    const isContainerCountry = await this.page.$(
-      LOCATOR.LOGIN.CONTAINER_COUNTRY
-    );
-    if (isContainerCountry) {
-      try {
-        await Promise.race([
-          this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click(),
-          this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY).click(),
-          this.page.locator(LOCATOR.LOGIN.IGNORE_COUNTRY2).click(),
-        ]);
-      } catch (error) {
-        if (error.name === 'TimeoutError') {
-          log.info('Server đã ở nhật bổn');
-        }
+    try {
+      await this.page.waitForSelector(LOCATOR.LOGIN.CONTAINER_COUNTRY, {
+        timeout: 6000,
+      });
+      await this.page.locator(LOCATOR.LOGIN.MODALCOUNTRY_CLOSE).click();
+    } catch (error) {
+      if (error.name === 'TimeoutError') {
+        log.info('Server đã ở nhật ban');
       }
     }
-    // Chờ và click nút chấp nhận chính sách
-    await this.page.locator(LOCATOR.LOGIN.ACCEPT_POLICY).click();
-
-    await this.page.locator(LOCATOR.LOGIN.EMAIL).fill(email);
-    await this.page.locator(LOCATOR.LOGIN.AGREEMENT).click();
-    await this.page.locator(LOCATOR.LOGIN.BUTTON_NEXT_STEP).click();
-
-    const msgFalse = 'Đăng nhập thất bại - ';
-    // handle error step 1 (mail error)
-    const errorEmail = await this.page.$(LOCATOR.LOGIN.ERROR_EMAIL);
-    if (errorEmail) {
-      await this.destroyPage();
-      return { success: false, message: msgFalse + 'Email không hợp lệ' };
-    }
-    await this.page.locator(LOCATOR.LOGIN.PASSWORD).fill(password);
-    await this.page.locator(LOCATOR.LOGIN.BUTTON_SUBMIT).click();
 
     try {
-      await this.page.waitForNavigation({
-        waitUntil: 'networkidle0',
-        timeout: 45000,
-      });
+      // Chờ và click nút chấp nhận chính sách
+      await this.page.locator(LOCATOR.LOGIN.ACCEPT_POLICY).click();
+
+      await this.page.locator(LOCATOR.LOGIN.EMAIL).fill(email);
+      await this.page.locator(LOCATOR.LOGIN.AGREEMENT).click();
+      await this.page.locator(LOCATOR.LOGIN.BUTTON_NEXT_STEP).click();
+
+      const msgFalse = 'Đăng nhập thất bại - ';
+
+      // handle error step 1 (mail error)
+      const errorEmail = await this.page.$(LOCATOR.LOGIN.ERROR_EMAIL);
+      if (errorEmail) {
+        await this.destroyPage();
+        return { success: false, message: msgFalse + 'Email không hợp lệ' };
+      }
+
+      await this.page.locator(LOCATOR.LOGIN.PASSWORD).fill(password);
+      await this.page.locator(LOCATOR.LOGIN.BUTTON_SUBMIT).click();
+
+      try {
+        await this.page.waitForNavigation({
+          waitUntil: 'networkidle0',
+          timeout: 45000,
+        });
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            msgFalse + 'Lỗi khi chờ điều hướng, dừng trình duyệt và mở lại',
+        };
+      }
+
+      const errorPassword = await this.page.$(LOCATOR.LOGIN.ERROR_PASSWORD);
+      if (errorPassword) {
+        await this.destroyPage();
+        return {
+          success: false,
+          message: msgFalse + 'Mật khẩu không chính xác',
+        };
+      }
+
+      await this.destroyPage();
+      return { success: true, message: 'Đăng nhập thành công' };
     } catch (error) {
+      log.error('Lỗi trong quá trình đăng nhập:', error.message);
+      await this.destroyPage();
       return {
         success: false,
-        message:
-          msgFalse + 'Lỗi khi chờ điều hướng, dừng trình duyệt và mở lại',
+        message: 'Đăng nhập thất bại - ' + error.message,
       };
-      // Xử lý trường hợp không redirect
     }
-
-    const errorPassword = await this.page.$(LOCATOR.LOGIN.ERROR_PASSWORD);
-    if (errorPassword) {
-      await this.destroyPage();
-      return { success: false, message: msgFalse + 'Mật khẩu không chính xác' };
-    }
-
-    await this.destroyPage();
-    return { success: true, message: 'Đăng nhập thành công' };
   }
 
   async destroyPage(): Promise<void> {
