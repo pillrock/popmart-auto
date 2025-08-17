@@ -69,7 +69,7 @@ export default function PopmartAutoContainer() {
 
       setStatusProducts((prev) => ({
         ...prev,
-        [data.linkProduct]: data.status,
+        [data.idProduct]: data.status,
       }));
     });
   }, []);
@@ -121,7 +121,10 @@ export default function PopmartAutoContainer() {
     /// nếu thấy có hàng thì mở hàng hàng loạt, đồng thời cập nhật thông tin sản phẩm
 
     if (products.length > 0) {
-      showNotification('Tiến hành mở và lấy dữ liệu sản phẩm...', 'success');
+      // start auto detact restock
+      const monitorres = await RendererAPI_BrowserControl.startMonitorAPI();
+      console.log(monitorres);
+      showNotification('Tiến hành mở và lấy dữ liệu sản phẩm.', 'success');
       const res = await RendererAPI_BrowserControl.addProducts(products);
       if (res.success) {
         showNotification(res.message, 'success');
@@ -151,10 +154,6 @@ export default function PopmartAutoContainer() {
       }
 
       showNotification('Mở và lấy dữ liệu sản phẩm thành công', 'success');
-
-      // start auto detact restock
-      const monitorres = await RendererAPI_BrowserControl.startMonitor();
-      console.log(monitorres);
     }
   };
   const onCloseBrowser = async () => {
@@ -223,15 +222,19 @@ export default function PopmartAutoContainer() {
 
     // nếu trình duyệt bật thì addProduct như bình thường (1 sản phẩm 1)
     if (isBrowserRuning) {
-      const res = await RendererAPI_BrowserControl.addProduct({
-        linkProduct: productInput.linkProduct,
-      });
+      const res = await RendererAPI_BrowserControl.addProduct(
+        productInput as ProductFull
+      );
       if (res.success) {
         showNotification(res.message, 'success');
 
         /**
          * lưu trữ dữ liệu sản phẩm
          */
+        if (!res.data) {
+          showNotification('Thêm sản phẩm thất bại', 'error');
+          return;
+        }
         RendererAPI_LocalStorage.addProduct(res.data);
 
         /**

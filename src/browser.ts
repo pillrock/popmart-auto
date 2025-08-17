@@ -38,10 +38,7 @@ export default class BrowserManager {
 
     const page = await this.browser.newPage();
     this.pages.push(page);
-    await page.goto(url, {
-      waitUntil: ['networkidle0', 'domcontentloaded'],
-      timeout: 60000,
-    });
+    await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
     return page;
   }
 

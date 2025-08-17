@@ -17,7 +17,7 @@ interface DataProduct {
   price: string;
   nameProduct: string;
 }
-interface productStatusCheck {
+export interface productStatusCheck {
   linkProduct: string;
   status: string;
   remove?: boolean;
@@ -307,7 +307,7 @@ export default class AutoDetectRestockProduct {
     }
   }
 
-  async addProduct(product: { linkProduct: string }): Promise<{
+  async addProduct(linkProduct: string): Promise<{
     success: boolean;
     message: string;
     dataProduct?: index___product;
@@ -317,14 +317,12 @@ export default class AutoDetectRestockProduct {
       // throw new Error('[-] Trình duyệt chưa được khởi tạo.');
     }
     try {
-      const productPage = await this.browserManager.openPage(
-        product.linkProduct
-      );
+      const productPage = await this.browserManager.openPage(linkProduct);
       // this.productPages.push(productPage);
 
       const dataProduct = await this.getProductData(productPage);
       this.productsList.push({
-        linkProduct: product.linkProduct,
+        linkProduct: linkProduct,
         imgUrl: dataProduct.imgUrl,
         nameProduct: dataProduct.nameProduct,
         price: dataProduct.price,
@@ -335,7 +333,7 @@ export default class AutoDetectRestockProduct {
         message: 'Mở sản phẩm thành công',
         dataProduct: {
           ...dataProduct,
-          linkProduct: product.linkProduct,
+          linkProduct: linkProduct,
           page: productPage,
         },
       };
@@ -346,7 +344,7 @@ export default class AutoDetectRestockProduct {
       };
     }
   }
-  async getProductData(page: Page) {
+  public async getProductData(page: Page) {
     const imgUrl = await page.$eval(LOCATOR.PRODUCT.IMAGE_SRC, (img) =>
       img.getAttribute('src')
     );
@@ -408,7 +406,7 @@ export default class AutoDetectRestockProduct {
         } else {
           return;
         }
-        await delay(1000);
+        await delay(500);
       }
       log.error('[-] Đã click nhiều lần nhưng vẫn chưa chuyển trang.');
     } catch (error) {

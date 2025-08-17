@@ -36,16 +36,6 @@ export default class LoginEmailPassword {
 
     try {
       // Chờ và click nút chấp nhận chính sách
-      const buttonAcceptPolicy = await this.page.waitForSelector(
-        LOCATOR.LOGIN.ACCEPT_POLICY
-      );
-      if (!buttonAcceptPolicy) {
-        return {
-          success: false,
-          message: 'Không tìm thấy nút chấp nhận chính sách',
-        };
-      }
-      return { success: true, message: 'Có tìm thấy nút chấp nhật chính sách' };
       await this.page.locator(LOCATOR.LOGIN.ACCEPT_POLICY).click();
 
       await this.page.locator(LOCATOR.LOGIN.EMAIL).fill(email);

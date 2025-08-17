@@ -19,9 +19,19 @@ export default function ProductCard({
     setTimeout(() => setCopied(false), 2000);
   };
   console.log('status product: ', statusProducts);
+  const getIdProduct = (url: string) => {
+    const split = url.split('/');
+    if (split.length == 7) {
+      return split[split.length - 2];
+    } else if (split.length == 6) {
+      return split[split.length - 1];
+    }
+  };
   useEffect(() => {
     if (
-      statusProducts[linkProduct]?.includes('xóa sản phẩm sau 10 giây') &&
+      statusProducts[getIdProduct(linkProduct)]?.includes(
+        'xóa sản phẩm sau 5 giây'
+      ) &&
       !removeOneTimes
     ) {
       console.log('REMOVEEEEEEEEEEEEEEEEEe: ', products);
@@ -67,14 +77,14 @@ export default function ProductCard({
         <div className="h-[30px] w-full animate-pulse bg-gray-200"></div>
       )}
       {price ? (
-        <p className="font-bold text-[#06b6d4]">JPY ¥{price}</p>
+        <p className="font-bold text-[#06b6d4]">{price}</p>
       ) : (
         <div className="h-[20px] w-[50%] animate-pulse bg-gray-200"></div>
       )}
 
       <span className="flex w-full items-center gap-x-1 bg-gray-500 p-1 text-xs text-white">
         <Loader2Icon size={15} className="animate-spin" />
-        <p>{statusProducts[linkProduct] || 'Chờ khởi động...'}</p>
+        <p>{statusProducts[getIdProduct(linkProduct)] || 'Chờ khởi động...'}</p>
       </span>
     </div>
   );

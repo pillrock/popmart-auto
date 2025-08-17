@@ -4,6 +4,7 @@ import LoginEmailPassword from '../actions/loginEmailPassword';
 import AutoDetectRestockProduct from '../actions/autoDetectRestockProduct';
 import { ProductFull } from '../components/PopmartAutoContainer';
 import { Page } from 'rebrowser-puppeteer-core';
+import { ProductAPI } from '../actions/productAPI';
 interface ProductInfo {
   url: string;
 }
@@ -17,7 +18,8 @@ export interface index___product extends ProductFull {
 }
 export class BrowserControl {
   private browserManager: BrowserManager | null = null;
-  private autoDetectService: AutoDetectRestockProduct | null = null;
+  // private autoDetectService: AutoDetectRestockProduct | null = null;
+  private autoDetectService: ProductAPI | null = null;
   private mainWindow: BrowserWindow;
   private isLoggedIn = false;
   private products: index___product[] = [];
@@ -35,9 +37,7 @@ export class BrowserControl {
           this.browserManager = new BrowserManager();
           await this.browserManager.start();
 
-          this.autoDetectService = new AutoDetectRestockProduct(
-            this.browserManager
-          );
+          this.autoDetectService = new ProductAPI(this.browserManager);
 
           this.sendToRenderer('browser:status', {
             status: 'initialized',
@@ -96,37 +96,72 @@ export class BrowserControl {
     );
 
     // Thêm sản phẩm
-    ipcMain.handle('product:add', async (_event, product: index___product) => {
-      try {
-        if (!this.isLoggedIn) {
-          return { success: false, message: 'Vui lòng đăng nhập trước' };
+    // ipcMain.handle('product:add', async (_event, product: index___product) => {
+    //   try {
+    //     if (!this.isLoggedIn) {
+    //       return { success: false, message: 'Vui lòng đăng nhập trước' };
+    //     }
+
+    //     if (!this.autoDetectService) {
+    //       return { success: false, message: 'Service chưa được khởi tạo' };
+    //     }
+
+    //     const res = await this.autoDetectService.addProduct(
+    //       product.linkProduct
+    //     );
+    //     this.products.push(res.dataProduct);
+
+    //     const { page, ...productDataWithoutPage } = res.dataProduct;
+    //     return {
+    //       success: true,
+    //       message: 'Mở sản phẩm thành công',
+    //       data: productDataWithoutPage,
+    //     };
+    //   } catch (error) {
+    //     console.error('Add product error:', error);
+
+    //     return {
+    //       success: false,
+    //       message: 'Lỗi không xác định: [' + error?.message + ']',
+    //     };
+    //   }
+    // });
+    ipcMain.handle(
+      'product-api:add',
+      async (_event, product: index___product) => {
+        try {
+          if (!this.isLoggedIn) {
+            return { success: false, message: 'Vui lòng đăng nhập trước' };
+          }
+
+          if (!this.autoDetectService) {
+            return { success: false, message: 'Service chưa được khởi tạo' };
+          }
+
+          const dataProduct = await this.autoDetectService.addProduct(
+            product.linkProduct
+          );
+          this.products.push({ ...dataProduct, page: null });
+
+          // const { page, ...productDataWithoutPage } = res.dataProduct;
+          return {
+            success: true,
+            message: 'Mở sản phẩm thành công',
+            data: dataProduct,
+          };
+        } catch (error) {
+          console.error('Add product error:', error);
+
+          return {
+            success: false,
+            message: 'Lỗi không xác định: [' + error?.message + ']',
+          };
         }
-
-        if (!this.autoDetectService) {
-          return { success: false, message: 'Service chưa được khởi tạo' };
-        }
-
-        const res = await this.autoDetectService.addProduct(product);
-        this.products.push(res.dataProduct);
-
-        const { page, ...productDataWithoutPage } = res.dataProduct;
-        return {
-          success: true,
-          message: 'Mở sản phẩm thành công',
-          data: productDataWithoutPage,
-        };
-      } catch (error) {
-        console.error('Add product error:', error);
-
-        return {
-          success: false,
-          message: 'Lỗi không xác định: [' + error?.message + ']',
-        };
       }
-    });
+    );
     // Thêm sản phẩm
     ipcMain.handle(
-      'product:add-more',
+      'product-api:add-more',
       async (_event, products: index___product[]) => {
         try {
           if (!this.isLoggedIn) {
@@ -137,16 +172,14 @@ export class BrowserControl {
             return { success: false, message: 'Service chưa được khởi tạo' };
           }
           const addProductPromise = products.map((product) =>
-            this.autoDetectService.addProduct(product)
+            this.autoDetectService.addProduct(product.linkProduct)
           );
           const dataProducts = (await Promise.all(addProductPromise)).map(
             (item) => {
-              this.products.push(item.dataProduct);
-              const { page, ...dataProductWithoutPage } = item.dataProduct;
-              return dataProductWithoutPage;
+              this.products.push({ ...item, page: null });
+              return item;
             }
           );
-
           return {
             success: true,
             message: 'Mở tất cả sản phẩm thành công',
@@ -193,15 +226,45 @@ export class BrowserControl {
     });
 
     // Bắt đầu theo dõi
-    ipcMain.handle('monitor:start', async () => {
-      try {
-        if (!this.autoDetectService) {
-          throw new Error('Service chưa được khởi tạo');
-        }
+    // ipcMain.handle('monitor:start', async () => {
+    //   try {
+    //     if (!this.autoDetectService) {
+    //       throw new Error('Service chưa được khởi tạo');
+    //     }
 
-        if (this.products.length === 0) {
-          throw new Error('Chưa có sản phẩm nào để theo dõi');
-        }
+    //     if (this.products.length === 0) {
+    //       throw new Error('Chưa có sản phẩm nào để theo dõi');
+    //     }
+
+    //     // this.sendToRenderer('monitor:status', {
+    //     //   status: 'started',
+    //     //   message: `Bắt đầu theo dõi ${this.products.length} sản phẩm`,
+    //     // });
+
+    //     // Chạy service trong background
+    //     this.autoDetectService.start((data) => {
+    //       this.sendToRenderer('monitor:status', data);
+    //     });
+
+    //     return { success: true, message: 'Đã bắt đầu theo dõi' };
+    //   } catch (error) {
+    //     console.error('Start monitor error:', error);
+    //     this.sendToRenderer('monitor:status', {
+    //       status: 'error',
+    //       message: `Lỗi bắt đầu theo dõi: ${error.message}`,
+    //     });
+    //     return { success: false, error: error.message };
+    //   }
+    // });
+    ipcMain.handle('monitor-api:start', async () => {
+      try {
+        // if (!this.autoDetectService) {
+        //   throw new Error('Service chưa được khởi tạo');
+        // }
+
+        // if (this.products.length === 0) {
+        //   throw new Error('Chưa có sản phẩm nào để theo dõi');
+        // }
 
         // this.sendToRenderer('monitor:status', {
         //   status: 'started',
@@ -225,23 +288,23 @@ export class BrowserControl {
     });
 
     // Dừng theo dõi
-    ipcMain.handle('monitor:stop', async () => {
-      try {
-        if (this.autoDetectService) {
-          await this.autoDetectService.cleanup();
-        }
+    // ipcMain.handle('monitor:stop', async () => {
+    //   try {
+    //     if (this.autoDetectService) {
+    //       await this.autoDetectService.cleanup();
+    //     }
 
-        this.sendToRenderer('monitor:status', {
-          status: 'stopped',
-          message: 'Đã dừng theo dõi',
-        });
+    //     this.sendToRenderer('monitor:status', {
+    //       status: 'stopped',
+    //       message: 'Đã dừng theo dõi',
+    //     });
 
-        return { success: true, message: 'Đã dừng theo dõi' };
-      } catch (error) {
-        console.error('Stop monitor error:', error);
-        return { success: false, error: error.message };
-      }
-    });
+    //     return { success: true, message: 'Đã dừng theo dõi' };
+    //   } catch (error) {
+    //     console.error('Stop monitor error:', error);
+    //     return { success: false, error: error.message };
+    //   }
+    // });
 
     // Lấy danh sách sản phẩm
     ipcMain.handle('product:list', async () => {
@@ -301,16 +364,16 @@ export class BrowserControl {
   }
 
   // Cleanup khi app đóng
-  public async cleanup(): Promise<void> {
-    try {
-      if (this.autoDetectService) {
-        await this.autoDetectService.cleanup();
-      }
-      if (this.browserManager) {
-        await this.browserManager.close();
-      }
-    } catch (error) {
-      console.error('Cleanup error:', error);
-    }
-  }
+  // public async cleanup(): Promise<void> {
+  //   try {
+  //     if (this.autoDetectService) {
+  //       await this.autoDetectService.cleanup();
+  //     }
+  //     if (this.browserManager) {
+  //       await this.browserManager.close();
+  //     }
+  //   } catch (error) {
+  //     console.error('Cleanup error:', error);
+  //   }
+  // }
 }

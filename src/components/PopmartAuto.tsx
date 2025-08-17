@@ -4,6 +4,7 @@ import ProductRender from './ProductsRender';
 import AddProduct from './children/AddProduct';
 import { usePopMartAuto } from '../contexts/PopmartAuto';
 import { useNotification } from '../hooks/useNotification';
+import { RendererAPI_BrowserControl } from '../ipcRenderer/BrowserControl';
 
 export default function PopmartAuto({
   isBrowserRuning,
@@ -29,6 +30,17 @@ export default function PopmartAuto({
                 onClick={async () => {
                   await onRunBrowser();
                 }}
+                // onClick={async () => {
+                //   const result =
+                //     await RendererAPI_BrowserControl.startAPIProduct({
+                //       collectionId: '247',
+                //       products: [
+                //         'https://www.popmart.com/jp/products/4265/PINO-JELLY-Chocolate-Cookie-Figurine',
+                //         'https://www.popmart.com/jp/products/5312/THE-MONSTERS-I-FOUND-YOU-%E3%81%AC%E3%81%84%E3%81%90%E3%82%8B%E3%81%BF',
+                //       ],
+                //     });
+                //   console.log(result);
+                // }}
                 className="flex w-full items-center justify-center bg-green-500 p-2"
               >
                 <Play size={20} className="mr-2" />

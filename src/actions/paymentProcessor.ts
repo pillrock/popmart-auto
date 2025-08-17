@@ -92,25 +92,37 @@ export default class PaymentProcessor {
       }
       log.info('[+] Đã tìm thấy nút chuyển trang.');
       let boxVerify = null;
-
-      while (boxVerify === null) {
-        await this.page.locator(LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT).click();
-        try {
-          boxVerify = await this.page
-            .waitForSelector('.index_cloudflareBox__9zYYt', { timeout: 6000 })
-            .catch();
-          break;
-        } catch (error) {
-          if (error.name === 'TimeoutError') {
-            log.info('Không tìm thấy phần tử sau 6 giây.');
+      try {
+        while (boxVerify === null) {
+          const confirmBTN = await this.page.waitForSelector(
+            LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT,
+            { timeout: 6000 }
+          );
+          if (!confirmBTN) {
+            break;
           }
+          await this.page
+            .locator(LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT)
+            .click();
+          try {
+            boxVerify = await this.page.waitForSelector(
+              '.index_cloudflareBox__9zYYt',
+              { timeout: 6000 }
+            );
+            break;
+          } catch (error) {
+            if (error.name === 'TimeoutError') {
+              log.info('Không tìm thấy phần tử sau 6 giây.');
+            }
+          }
+          await delay(500);
         }
-        await delay(1000);
+      } catch (error) {
+        console.log('er#34232: ', error.message);
       }
       if (boxVerify) {
         log.info('[+] Đang xác thực Cloudflare...');
 
-        // Đợi Cloudflare box biến mất (tối đa 60 giây)
         await this.page.waitForFunction(
           (selector) => !document.querySelector(selector),
           { timeout: 10000 },
@@ -123,7 +135,7 @@ export default class PaymentProcessor {
       }
     } catch (error) {
       console.error('[-] Lỗi khi chuyển tới trang thanh toán:', error);
-      throw new Error('[-] Xác nhận thanh toán không thành công.');
+      // throw new Error('[-] Xác nhận thanh toán không thành công.');
     }
   }
   // async #fillPaymentForm({ cardNumber, cardExpiry, cardCvc }: paymentInfo) {

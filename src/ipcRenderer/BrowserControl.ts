@@ -65,12 +65,15 @@ export class RendererAPI_BrowserControl {
   static async addProduct(
     product: ProductFull
   ): Promise<APIResponse<DataProduct>> {
-    return window.electronAPI.ipcRenderer.invoke('product:add', product);
+    return window.electronAPI.ipcRenderer.invoke('product-api:add', product);
   }
   static async addProducts(
     products: ProductFull[]
   ): Promise<APIResponse<DataProduct[]>> {
-    return window.electronAPI.ipcRenderer.invoke('product:add-more', products);
+    return window.electronAPI.ipcRenderer.invoke(
+      'product-api:add-more',
+      products
+    );
   }
 
   static async removeProduct(linkProduct: string): Promise<APIResponse> {
@@ -87,7 +90,15 @@ export class RendererAPI_BrowserControl {
   static async startMonitor(): Promise<APIResponse> {
     return window.electronAPI.ipcRenderer.invoke('monitor:start');
   }
-
+  static async startMonitorAPI(): Promise<APIResponse> {
+    return window.electronAPI.ipcRenderer.invoke('monitor-api:start');
+  }
+  static async startAPIProduct(data: {
+    products: string[];
+    collectionId: string;
+  }): Promise<APIResponse> {
+    return window.electronAPI.ipcRenderer.invoke('productAPI:start', data);
+  }
   static async stopMonitor(): Promise<APIResponse> {
     return window.electronAPI.ipcRenderer.invoke('monitor:stop');
   }
@@ -117,7 +128,7 @@ export class RendererAPI_BrowserControl {
   }
 
   static onMonitorStatus(
-    callback: (data: { linkProduct: string; status: string }) => void
+    callback: (data: { idProduct: string; status: string }) => void
   ): () => void {
     window.electronAPI.ipcRenderer.on('monitor:status', callback);
     return () =>
