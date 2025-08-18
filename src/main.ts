@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import { updateElectronApp } from 'update-electron-app';
 import env from '../env.json';
@@ -81,3 +81,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});

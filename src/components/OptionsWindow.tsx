@@ -1,9 +1,18 @@
 import { MinusIcon, XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function OptionsWindow() {
+  const [version, setVersion] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const v = await window.electronAPI.ipcRenderer.invoke('get-app-version');
+      setVersion(v as string);
+    })();
+  }, []);
   return (
     <div className="app-region-drag fixed top-0 flex w-full items-center justify-between gap-x-4 bg-[#E8DFEE] pl-2">
-      <div>POPMART (JP) - Tự động đặt sản phẩm</div>
+      <div>{`POPAUTO - v${version}`}</div>
       <div className="justify-en app-region-no-drag flex">
         <span
           onClick={() => {

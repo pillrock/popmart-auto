@@ -361,16 +361,16 @@ export class BrowserControl {
   }
 
   // Cleanup khi app đóng
-  // public async cleanup(): Promise<void> {
-  //   try {
-  //     if (this.autoDetectService) {
-  //       await this.autoDetectService.cleanup();
-  //     }
-  //     if (this.browserManager) {
-  //       await this.browserManager.close();
-  //     }
-  //   } catch (error) {
-  //     console.error('Cleanup error:', error);
-  //   }
-  // }
+  public async cleanup(): Promise<void> {
+    try {
+      if (this.autoDetectService) {
+        await this.autoDetectService.cleanup();
+      }
+      if (this.browserManager) {
+        await this.browserManager.close();
+      }
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
+  }
 }
