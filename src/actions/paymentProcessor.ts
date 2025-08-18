@@ -78,6 +78,43 @@ export default class PaymentProcessor {
       // Không throw error ở đây, chỉ log warning và tiếp tục
     }
   }
+  //   async confirmBeforePayment() {
+  //   try {
+  //     const button = await this.page.waitForSelector(
+  //       LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT,
+  //       { timeout: 15000 }
+  //     );
+  //     if (!button) {
+  //       throw new Error('[-] Nút chuyển trang không được tìm thấy sau thời gian chờ.');
+  //     }
+  //     log.info('[+] Đã tìm thấy nút chuyển trang.');
+
+  //     await this.page.locator(LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT).click();
+
+  //     let boxVerify: any = null;
+  //     try {
+  //       boxVerify = await this.page.waitForSelector('.index_cloudflareBox__9zYYt', {
+  //         timeout: 6000,
+  //       });
+  //     } catch {
+  //       log.info('[+] Không có Cloudflare verification, tiếp tục...');
+  //     }
+
+  //     if (boxVerify) {
+  //       log.info('[+] Đang xác thực Cloudflare...');
+  //       await this.page.waitForFunction(
+  //         (selector) => !document.querySelector(selector),
+  //         { timeout: 15000 },
+  //         '.index_cloudflareBox__9zYYt'
+  //       );
+  //       log.info('[+] Xác thực Cloudflare thành công.');
+  //     }
+
+  //   } catch (error: any) {
+  //     console.error('[-] Lỗi khi chuyển tới trang thanh toán:', error.message);
+  //   }
+  // }
+
   async confirmBeforePayment() {
     try {
       // nút chuyển tới thanh toán
@@ -96,7 +133,7 @@ export default class PaymentProcessor {
         while (boxVerify === null) {
           const confirmBTN = await this.page.waitForSelector(
             LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT,
-            { timeout: 6000 }
+            { timeout: 1000 }
           );
           if (!confirmBTN) {
             break;
