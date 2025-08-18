@@ -13,8 +13,7 @@ if (started) {
   app.quit();
 }
 updateElectronApp({
-  repo: env.githubRepo, // Repository GitHub của bạn
-  updateInterval: '1 hour', // Kiểm tra cập nhật mỗi giờ
+  repo: env.githubRepo,
 });
 const store = new Store();
 export const localStorage = new LocaStorage(store);
