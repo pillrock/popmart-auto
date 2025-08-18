@@ -57,6 +57,7 @@ interface DataProductResponse {
   name: string;
   desc: string;
   productData: ProductData[];
+  page: Page;
 }
 
 export class ProductAPI {
@@ -392,7 +393,7 @@ export class ProductAPI {
     console.log('kiem tra loi san pham: ', dataProduct.id);
 
     const hasPaymentError = await paymentProcessor.hasPaymentError(page);
-    await page.close();
+    // await page.close();
     if (hasPaymentError) {
       console.log('phat hien loi san pham: ', dataProduct.id);
       callback({
@@ -431,6 +432,9 @@ export class ProductAPI {
         status: `[✅] - Đã gửi mail thành công, xóa sản phẩm sau 5 giây...`,
       });
     }
+    setTimeout(async () => {
+      await page.close();
+    }, 5000);
   }
 
   private async autoDetectForCollection(

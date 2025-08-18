@@ -208,9 +208,6 @@ export class BrowserControl {
           const product = this.products[i];
           if (product.linkProduct == linkProduct) {
             this.products.splice(i, 1);
-            if (!product.page.isClosed()) {
-              await product.page.close();
-            }
           }
         }
 
