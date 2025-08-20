@@ -210,6 +210,7 @@ export class BrowserControl {
             this.products.splice(i, 1);
           }
         }
+        await this.autoDetectService?.removeProduct(linkProduct);
 
         return { success: true, message: 'Sản phẩm đã được xóa' };
       } catch (error) {

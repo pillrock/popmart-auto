@@ -73,6 +73,12 @@ export class ProductAPI {
     this.emitter.on('newProductAdded', (collectionId: number) => {
       this.autoDetectForCollection(collectionId, callback);
     });
+    this.emitter.on('notFoundProductInCollection', (idProduct: string) => {
+      callback({
+        idProduct,
+        status: `[❌] - không có sản phẩm trong dữ liệu`,
+      });
+    });
     // const promises = Array.from(this.collections.keys()).map((collectionId) =>
     //   this.autoDetectForCollection(collectionId)
     // );
@@ -144,6 +150,33 @@ export class ProductAPI {
       return split[split.length - 1];
     }
   };
+  async removeProduct(linkProduct: string) {
+    const idProduct = this.getIdProduct(linkProduct);
+    if (!idProduct) {
+      console.log('Không thấy ID sản phẩm', linkProduct);
+      return;
+    }
+
+    // Tìm kiếm trong tất cả collections
+    for (const [collectionId, collection] of this.collections.entries()) {
+      const productIndex = collection.statusProducts.findIndex(
+        (product) => product.idProduct === idProduct
+      );
+
+      if (productIndex !== -1) {
+        // Xóa sản phẩm khỏi collection
+        collection.statusProducts.splice(productIndex, 1);
+        console.log(
+          `Đã xóa sản phẩm ${idProduct} khỏi collection ${collectionId}`
+        );
+        return;
+      }
+    }
+
+    console.log(
+      `Không tìm thấy sản phẩm ${idProduct} trong bất kỳ collection nào`
+    );
+  }
   async addProduct(linkProduct: string) {
     /* TODO fix lỗi trong quá trình autoDetect khi thêm sản phẩm thì những dữ liệu 
     mới sẽ không gửi về được
@@ -229,7 +262,7 @@ export class ProductAPI {
     let page = 1;
     let count = 0;
     let isRunning = true;
-
+    let idProductsNotFound: string[] = [];
     while (
       isRunning &&
       collectionData.statusProducts.some(
@@ -243,6 +276,9 @@ export class ProductAPI {
         );
 
         if (!popmartData) {
+          idProductsNotFound.map((idProduct) => {
+            this.emitter.emit('notFoundProductInCollection', idProduct);
+          });
           return;
         }
 
@@ -264,11 +300,15 @@ export class ProductAPI {
               console.log(
                 `Trong ${collectionId}, trang ${page} có sản phẩm ${id}`
               );
+              idProductsNotFound = idProductsNotFound.filter(
+                (idNotFound) => idNotFound !== id
+              );
             } else {
               product.isChecked = false;
               console.log(
                 `Trong ${collectionId}, trang ${page} không có sản phẩm ${id}`
               );
+              idProductsNotFound.push(id);
             }
           }
         });
@@ -452,6 +492,7 @@ export class ProductAPI {
 
       if (keyPages.length === 0) {
         console.log(`Bộ sưu tập ${collectionId} không có sản phẩm`);
+        this.collections.delete(collectionId);
         isRunning = false;
         return;
       }
@@ -586,6 +627,7 @@ export class ProductAPI {
       );
       if (allDone) {
         console.log(`Collection ${collectionId} đã hoàn thành`);
+        this.collections.delete(collectionId);
         isRunning = false;
       }
     }
