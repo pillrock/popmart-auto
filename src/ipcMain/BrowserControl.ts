@@ -12,6 +12,7 @@ interface ProductInfo {
 interface LoginCredentials {
   email: string;
   password: string;
+  isManual: boolean;
 }
 export interface index___product extends ProductFull {
   page: Page;
@@ -72,12 +73,13 @@ export class BrowserControl {
           });
 
           const loginService = new LoginEmailPassword(this.browserManager);
+
           this.isLoggedIn = true;
           return await loginService.runLogin(
             credentials.email,
-            credentials.password
+            credentials.password,
+            credentials.isManual
           );
-
           // this.sendToRenderer('login:status', {
           //   status,
           //   message,

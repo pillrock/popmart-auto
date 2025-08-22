@@ -15,12 +15,19 @@ export default class LoginEmailPassword {
 
   async runLogin(
     email: string,
-    password: string
+    password: string,
+    isManual: boolean
   ): Promise<{ success: boolean; message: string }> {
     if (!this.browserManager) {
       throw new Error('[-] Trình duyệt chưa được khởi tạo');
     }
-    this.page = await this.browserManager.openPage(this.url);
+    if (isManual) {
+      this.page = await this.browserManager.openPage(this.url);
+      return {
+        success: true,
+        message: 'Có 45 giây cho quá trình đăng nhập thủ công',
+      };
+    }
     await this.page.waitForNavigation({ waitUntil: 'load' });
 
     try {

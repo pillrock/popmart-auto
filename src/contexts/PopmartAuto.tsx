@@ -25,6 +25,8 @@ type popmartAutoType = {
   onAddProduct: () => Promise<void>;
   onRemoveProduct: (linkProduct: string) => Promise<void>;
   statusProducts: Record<string, string>;
+  isManualLogin: boolean;
+  setIsManualLogin: (bl: boolean) => void;
 };
 export const PopMartAutoContext = createContext<popmartAutoType | null>(null);
 

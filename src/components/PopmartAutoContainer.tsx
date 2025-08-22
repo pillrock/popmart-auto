@@ -6,6 +6,7 @@ import { PopMartAutoContext } from '../contexts/PopmartAuto';
 import { RendererAPI_BrowserControl } from '../ipcRenderer/BrowserControl';
 import { useNotification } from '../hooks/useNotification';
 import { RendererAPI_LocalStorage } from '../ipcRenderer/LocalStorage';
+import delay from '../utils/delay';
 export type Account = {
   email: string;
   password: string;
@@ -46,6 +47,7 @@ export default function PopmartAutoContainer() {
   const [statusProducts, setStatusProducts] = useState<Record<string, string>>(
     {}
   );
+  const [isManualLogin, setIsManualLogin] = useState<boolean>(false);
   const { showNotification, NotificationComponents } = useNotification();
 
   /**
@@ -103,6 +105,7 @@ export default function PopmartAutoContainer() {
     const res = await RendererAPI_BrowserControl.login({
       email: accountInput.email,
       password: accountInput.password,
+      isManual: isManualLogin,
     });
 
     if (res.success) {
@@ -114,6 +117,9 @@ export default function PopmartAutoContainer() {
        * từ sau lấy ra luôn, người dùng đỡ phải nhập
        */
       RendererAPI_LocalStorage.setUserData(accountInput);
+      if (isManualLogin) {
+        await delay(45000);
+      }
     } else {
       showNotification(res.message, 'error');
     }
@@ -293,6 +299,8 @@ export default function PopmartAutoContainer() {
         onCloseBrowser,
         onRemoveProduct,
         statusProducts,
+        isManualLogin,
+        setIsManualLogin,
       }}
     >
       <PopmartAuto {...popmartAutoProps} />

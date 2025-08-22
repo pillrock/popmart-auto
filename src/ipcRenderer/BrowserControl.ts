@@ -7,6 +7,7 @@ export interface ProductInfo {
 export interface LoginCredentials {
   email: string;
   password: string;
+  isManual: boolean;
 }
 
 export interface APIResponse<T = any> {
