@@ -28,6 +28,8 @@ export default class LoginEmailPassword {
         message: 'Có 45 giây cho quá trình đăng nhập thủ công',
       };
     }
+    this.page = await this.browserManager.openPage(this.url);
+
     await this.page.waitForNavigation({ waitUntil: 'load' });
 
     try {

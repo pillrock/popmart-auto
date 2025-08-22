@@ -14,9 +14,10 @@ export default function AccountSet() {
       <h1 className="text-base">TÀI KHOẢN POPMART (JP)</h1>
       <div
         onClick={() => {
+          if (isBrowserRuning) return;
           setIsManualLogin(!isManualLogin);
         }}
-        className="flex cursor-pointer items-center justify-between border border-gray-300 p-2"
+        className={`flex cursor-pointer items-center ${isBrowserRuning && 'cursor-no-drop'} justify-between border border-gray-300 p-2`}
       >
         <p>Đăng nhập thủ công</p>
         <div

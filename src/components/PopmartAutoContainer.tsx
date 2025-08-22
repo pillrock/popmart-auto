@@ -126,10 +126,10 @@ export default function PopmartAutoContainer() {
 
     /// nếu thấy có hàng thì mở hàng hàng loạt, đồng thời cập nhật thông tin sản phẩm
 
+    // start auto detact restock◘
+    await RendererAPI_BrowserControl.startMonitorAPI();
+    // console.log(monitorres);
     if (products.length > 0) {
-      // start auto detact restock
-      const monitorres = await RendererAPI_BrowserControl.startMonitorAPI();
-      console.log(monitorres);
       showNotification('Tiến hành mở và lấy dữ liệu sản phẩm.', 'success');
       const res = await RendererAPI_BrowserControl.addProducts(products);
       if (res.success) {

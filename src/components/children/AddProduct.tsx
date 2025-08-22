@@ -24,7 +24,7 @@ export default function AddProduct() {
               isAddMore: !productInput.isAddMore,
             }));
           }}
-          className="flex cursor-pointer items-center justify-between border border-gray-300 p-2"
+          className={`flex cursor-pointer ${isBrowserRuning && 'cursor-no-drop'} items-center justify-between border border-gray-300 p-2`}
         >
           <p>Thêm nhiều</p>
           <div
