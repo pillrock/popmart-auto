@@ -256,7 +256,7 @@ export class BrowserControl {
     //     return { success: false, error: error.message };
     //   }
     // });
-    ipcMain.handle('monitor-api:start', async () => {
+    ipcMain.handle('monitor-api:start', async (_, waitTime: number) => {
       try {
         // if (!this.autoDetectService) {
         //   throw new Error('Service chưa được khởi tạo');
@@ -274,7 +274,7 @@ export class BrowserControl {
         // Chạy service trong background
         this.autoDetectService.start((data) => {
           this.sendToRenderer('monitor:status', data);
-        });
+        }, waitTime);
 
         return { success: true, message: 'Đã bắt đầu theo dõi' };
       } catch (error) {

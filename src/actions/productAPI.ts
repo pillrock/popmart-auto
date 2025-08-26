@@ -69,9 +69,9 @@ export class ProductAPI {
     this.browserManager = browserManager;
     this.emitter = new EventEmitter();
   }
-  async start(callback: (data: productStatusCheck) => void) {
+  async start(callback: (data: productStatusCheck) => void, waitTime: number) {
     this.emitter.on('newProductAdded', (collectionId: number) => {
-      this.autoDetectForCollection(collectionId, callback);
+      this.autoDetectForCollection(collectionId, callback, waitTime);
     });
     this.emitter.on('notFoundProductInCollection', (idProduct: string) => {
       callback({
@@ -479,7 +479,8 @@ export class ProductAPI {
 
   private async autoDetectForCollection(
     collectionId: number,
-    callback: (data: productStatusCheck) => void
+    callback: (data: productStatusCheck) => void,
+    waitTime: number
   ) {
     const collectionData = this.getOrCreateCollection(collectionId);
     let count = 1;
@@ -619,7 +620,7 @@ export class ProductAPI {
 
       await Promise.all(promises);
       count++;
-      await delay(1000);
+      await delay(waitTime);
 
       // Kiểm tra xem tất cả products đã doneLoop chưa
       const allDone = collectionData.statusProducts.every(

@@ -37,6 +37,12 @@ export interface statusProduct {
   status: string;
 }
 
+export interface Setting {
+  waitTime: number;
+}
+const defaultSettings = {
+  waitTime: 1000,
+};
 export default function PopmartAutoContainer() {
   const [accountInput, setAccountInput] = useState<Account | null>(nullAccount);
   const [productInput, setProductInput] = useState<ProductLess | null>(
@@ -50,6 +56,19 @@ export default function PopmartAutoContainer() {
   const [isManualLogin, setIsManualLogin] = useState<boolean>(false);
   const { showNotification, NotificationComponents } = useNotification();
 
+  const [settings, setSettings] = useState<Setting | null>(null);
+  useEffect(() => {
+    (async () => {
+      const settingsSaveLocal = await RendererAPI_LocalStorage.getSettings();
+      console.log('settingsSaveLocal data: ', settingsSaveLocal.data);
+      setSettings_save(settingsSaveLocal.data ?? defaultSettings);
+      return;
+    })();
+  }, []);
+  const setSettings_save = (settings: Setting) => {
+    setSettings(settings);
+    RendererAPI_LocalStorage.setSettings(settings);
+  };
   /**
    * - lấy dữ liệu từ electron-store (nếu có)
    * - đăng ký nhận data từ callback, check status Product
@@ -126,8 +145,10 @@ export default function PopmartAutoContainer() {
 
     /// nếu thấy có hàng thì mở hàng hàng loạt, đồng thời cập nhật thông tin sản phẩm
 
-    // start auto detact restock◘
-    await RendererAPI_BrowserControl.startMonitorAPI();
+    // start auto detact restock
+    await RendererAPI_BrowserControl.startMonitorAPI(
+      settings?.waitTime ?? defaultSettings.waitTime
+    );
     // console.log(monitorres);
     if (products.length > 0) {
       showNotification('Tiến hành mở và lấy dữ liệu sản phẩm.', 'success');
@@ -301,6 +322,8 @@ export default function PopmartAutoContainer() {
         statusProducts,
         isManualLogin,
         setIsManualLogin,
+        settings,
+        setSettings_save,
       }}
     >
       <PopmartAuto {...popmartAutoProps} />

@@ -3,6 +3,7 @@ import {
   Account,
   ProductFull,
   ProductLess,
+  Setting,
   statusProduct,
 } from '../components/PopmartAutoContainer';
 
@@ -27,6 +28,8 @@ type popmartAutoType = {
   statusProducts: Record<string, string>;
   isManualLogin: boolean;
   setIsManualLogin: (bl: boolean) => void;
+  settings: Setting | null;
+  setSettings_save: (s: Setting) => void;
 };
 export const PopMartAutoContext = createContext<popmartAutoType | null>(null);
 

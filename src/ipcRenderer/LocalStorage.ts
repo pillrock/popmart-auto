@@ -1,5 +1,6 @@
 // renderer-api.ts - Sử dụng trong renderer process
 
+import { Setting } from '../components/PopmartAutoContainer';
 import { ProductData, UserData } from '../ipcMain/LocalStorage';
 import { APIResponse } from './BrowserControl';
 
@@ -28,9 +29,18 @@ export class RendererAPI_LocalStorage {
       products
     );
   }
+  static setSettings(settings: Setting): Promise<APIResponse> {
+    return window.electronAPI.ipcRenderer.invoke(
+      'storage:setSettings',
+      settings
+    );
+  }
 
   static getProducts(): Promise<APIResponse<ProductData[]>> {
     return window.electronAPI.ipcRenderer.invoke('storage:getProducts');
+  }
+  static getSettings(): Promise<APIResponse<Setting | null>> {
+    return window.electronAPI.ipcRenderer.invoke('storage:getSettings');
   }
 
   static addProduct(product: ProductData): Promise<APIResponse> {

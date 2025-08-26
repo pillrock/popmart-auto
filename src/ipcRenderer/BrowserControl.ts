@@ -91,8 +91,8 @@ export class RendererAPI_BrowserControl {
   static async startMonitor(): Promise<APIResponse> {
     return window.electronAPI.ipcRenderer.invoke('monitor:start');
   }
-  static async startMonitorAPI(): Promise<APIResponse> {
-    return window.electronAPI.ipcRenderer.invoke('monitor-api:start');
+  static async startMonitorAPI(waitTime: number): Promise<APIResponse> {
+    return window.electronAPI.ipcRenderer.invoke('monitor-api:start', waitTime);
   }
   static async startAPIProduct(data: {
     products: string[];

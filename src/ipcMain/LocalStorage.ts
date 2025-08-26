@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import { Setting } from '../components/PopmartAutoContainer';
 
 export interface UserData {
   email: string;
@@ -36,8 +37,14 @@ export default class LocaStorage {
     ipcMain.handle('storage:setProducts', (_, products: ProductData[]) =>
       this.setProducts(products)
     );
+    ipcMain.handle('storage:setSettings', (_, settings: Setting) =>
+      this.setSettings(settings)
+    );
     ipcMain.handle('storage:getProducts', () => {
       return { data: this.getProducts() };
+    });
+    ipcMain.handle('storage:getSettings', () => {
+      return { data: this.getSettings() };
     });
     ipcMain.handle('storage:addProduct', (_, product: ProductData) =>
       this.addProduct(product)
@@ -72,9 +79,15 @@ export default class LocaStorage {
   setProducts = (products: ProductData[]) => {
     this.store.set('products', products);
   };
+  setSettings = (settings: Setting) => {
+    this.store.set('settings', settings);
+  };
 
   getProducts = (): ProductData[] => {
     return (this.store.get('products') as ProductData[]) || [];
+  };
+  getSettings = (): Setting => {
+    return (this.store.get('settings') as Setting) || null;
   };
 
   addProduct = (product: ProductData) => {
