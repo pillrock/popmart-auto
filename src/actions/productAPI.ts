@@ -438,7 +438,7 @@ export class ProductAPI {
       console.log('phat hien loi san pham: ', dataProduct.id);
       callback({
         idProduct: dataProduct.id,
-        status: `[✅] - Phát hiện lỗi thanh toán, xóa sản phẩm sau 5 giây...`,
+        status: `[❌] - Phát hiện lỗi thanh toán, xóa sản phẩm sau 5 giây...`,
       });
       return;
     } else {
@@ -473,7 +473,9 @@ export class ProductAPI {
       });
     }
     setTimeout(async () => {
-      await page.close();
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }, 5000);
   }
 

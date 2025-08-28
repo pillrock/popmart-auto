@@ -129,8 +129,9 @@ export default class PaymentProcessor {
       }
       log.info('[+] Đã tìm thấy nút chuyển trang.');
       let boxVerify = null;
+      let maxAttempts = 5;
       try {
-        while (boxVerify === null) {
+        while (boxVerify === null && maxAttempts > 0) {
           const confirmBTN = await this.page.waitForSelector(
             LOCATOR.PAYMENT.BUTTON_BEFORE_PAYMENT,
             { timeout: 1000 }
@@ -153,6 +154,12 @@ export default class PaymentProcessor {
             }
           }
           await delay(500);
+          maxAttempts--;
+        }
+        if (maxAttempts === 0) {
+          if (!this.page.isClosed()) {
+            this.page.close();
+          }
         }
       } catch (error) {
         console.log('er#34232: ', error.message);
