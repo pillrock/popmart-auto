@@ -81,7 +81,12 @@ export default function PopmartAutoContainer() {
       console.log(res1, res2);
 
       res1.data && setAccountInput(res1.data);
-      res2.data.length > 0 && setProducts(res2.data);
+      const isValidProduct = res2.data.every((product) => product !== null);
+      if (isValidProduct) {
+        res2.data.length > 0 && setProducts(res2.data);
+      } else {
+        RendererAPI_LocalStorage.setProducts([]);
+      }
     })();
 
     // nhận statusProduct khi autoDetect
